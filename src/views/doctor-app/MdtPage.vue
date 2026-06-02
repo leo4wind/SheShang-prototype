@@ -12,7 +12,11 @@ const collab = useCollabStore()
 // 受邀方视角：演示用陈志远(d-03)，因为预置 MDT 邀请了他
 const VIEWER_ID = 'd-03'
 
-const mdtId = computed(() => (route.params.id as string) || collab.mdts[0]?.id || '')
+const mdtId = computed(() => {
+  const id = route.params.id as string
+  if (id && id !== 'demo') return id
+  return collab.mdts[0]?.id ?? ''
+})
 const m = computed(() => collab.getMdt(mdtId.value))
 const myInvite = computed(() => m.value?.invitees.find((i) => i.doctorId === VIEWER_ID))
 

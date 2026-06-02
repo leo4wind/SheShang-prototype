@@ -7,7 +7,12 @@ import { useCollabStore, MDT_STATUS_LABEL } from '@/stores/collab'
 const route = useRoute()
 const collab = useCollabStore()
 
-const m = computed(() => collab.getMdt(route.params.id as string))
+const mdtId = computed(() => {
+  const id = route.params.id as string
+  if (id && id !== 'demo') return id
+  return collab.mdts[0]?.id ?? ''
+})
+const m = computed(() => collab.getMdt(mdtId.value))
 
 const chatInput = ref('')
 const chat = ref<{ who: string; text: string }[]>([

@@ -7,7 +7,12 @@ const route = useRoute()
 const router = useRouter()
 const collab = useCollabStore()
 
-const r = computed(() => collab.getReferral(route.params.id as string))
+const referralId = computed(() => {
+  const id = route.params.id as string
+  if (id && id !== 'demo') return id
+  return collab.referrals[0]?.id ?? ''
+})
+const r = computed(() => collab.getReferral(referralId.value))
 
 const TRACK: ReferralStatus[] = ['pending', 'accepted', 'transferring', 'arrived']
 const stepIndex = computed(() => {

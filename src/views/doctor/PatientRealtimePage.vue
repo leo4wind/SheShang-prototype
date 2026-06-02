@@ -11,7 +11,11 @@ const route = useRoute()
 const router = useRouter()
 const rescue = useRescueStore()
 
-const eventId = computed(() => route.params.id as string)
+const eventId = computed(() => {
+  const id = route.params.id as string
+  if (id && id !== 'demo') return id
+  return rescue.currentEvent?.id ?? rescue.activeEvents[0]?.id ?? ''
+})
 const ev = computed(() => rescue.getEvent(eventId.value))
 const hospital = computed(() => (ev.value?.selectedHospitalId ? getHospital(ev.value.selectedHospitalId) : undefined))
 

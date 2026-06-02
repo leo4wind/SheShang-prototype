@@ -10,7 +10,11 @@ const router = useRouter()
 const collab = useCollabStore()
 
 // APP 接收方：默认展示收件箱里第一条待处理，或按 query 指定
-const referralId = computed(() => (route.params.id as string) || collab.inboxReferrals[0]?.id || '')
+const referralId = computed(() => {
+  const id = route.params.id as string
+  if (id && id !== 'demo') return id
+  return collab.inboxReferrals[0]?.id ?? ''
+})
 const r = computed(() => collab.getReferral(referralId.value))
 
 const urgencyType: Record<string, string> = { 一般: 'info', 紧急: 'warning', 危急: 'danger' }

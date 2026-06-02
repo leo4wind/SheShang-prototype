@@ -9,7 +9,12 @@ const route = useRoute()
 const router = useRouter()
 const collab = useCollabStore()
 
-const m = computed(() => collab.getMdt(route.params.id as string))
+const mdtId = computed(() => {
+  const id = route.params.id as string
+  if (id && id !== 'demo') return id
+  return collab.mdts[0]?.id ?? ''
+})
+const m = computed(() => collab.getMdt(mdtId.value))
 
 const conclusion = ref('')
 const chatInput = ref('')

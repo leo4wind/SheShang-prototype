@@ -9,11 +9,11 @@ const router = useRouter()
 const rescue = useRescueStore()
 
 // APP 端：默认展示治疗中的事件，便于移动补录
-const eventId = computed(() =>
-  (route.params.id as string) ||
-  rescue.events.find((e) => e.status === 'treating')?.id ||
-  rescue.events[0]?.id || ''
-)
+const eventId = computed(() => {
+  const id = route.params.id as string
+  if (id && id !== 'demo') return id
+  return rescue.events.find((e) => e.status === 'treating')?.id ?? rescue.events[0]?.id ?? ''
+})
 const ev = computed(() => rescue.getEvent(eventId.value))
 </script>
 
