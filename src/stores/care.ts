@@ -1,6 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { medications, followupNodes, chatScript, botFollowups, type ChatTurn } from '@/mock/care'
+import {
+  medications, followupNodes, chatScript, botFollowups,
+  surveyQuestions, careMessageSeed,
+  type ChatTurn, type CareMessage
+} from '@/mock/care'
 
 // 主线 4 陪护状态：用药打卡 + 陪护对话
 // 含 journey-4「系统约束」的演示：推送计数 + 频次控制提示
@@ -62,9 +66,33 @@ export const useCareStore = defineStore('care', () => {
     if (n) n.done = true
   }
 
+  // ───── 随访问卷（P113）─────
+  const surveyAnswers = ref<Record<string, string | number>>({})
+  const surveySubmitted = ref(false)
+  function setAnswer(qid: string, val: string | number) {
+    surveyAnswers.value[qid] = val
+  }
+  const surveyProgress = computed(() => {
+    const answered = surveyQuestions.filter((q) => surveyAnswers.value[q.id] !== undefined && surveyAnswers.value[q.id] !== '').length
+    return Math.round((answered / surveyQuestions.length) * 100)
+  })
+  function submitSurvey() {
+    surveySubmitted.value = true
+  }
+
+  // ───── 医患消息（P116 / P217，共享线程）─────
+  const messages = ref<CareMessage[]>([...careMessageSeed])
+  function sendCareMessage(from: CareMessage['from'], text: string) {
+    if (!text.trim()) return
+    const at = new Date().toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+    messages.value.push({ from, text, at })
+  }
+
   return {
     checkins, setCheckin, getCheckin, adherence,
     chat, botStep, chatClosed, patientReply,
-    nodes, nextNode, completedCount, completeNode
+    nodes, nextNode, completedCount, completeNode,
+    surveyAnswers, surveySubmitted, setAnswer, surveyProgress, submitSurvey,
+    messages, sendCareMessage
   }
 })
