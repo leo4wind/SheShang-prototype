@@ -55,6 +55,11 @@ const priorityTagType = computed(() => {
           <template #title>总入口</template>
         </el-menu-item>
 
+        <el-menu-item index="/version-roadmap">
+          <el-icon><Flag /></el-icon>
+          <template #title>版本规划</template>
+        </el-menu-item>
+
         <el-sub-menu v-for="group in navTree" :key="group.key" :index="group.key">
           <template #title>
             <el-icon><component :is="group.icon" /></el-icon>
