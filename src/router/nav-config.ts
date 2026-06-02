@@ -128,7 +128,7 @@ export const navTree: NavGroup[] = [
   {
     key: 'doctor-app',
     title: '医生端 APP',
-    icon: 'CellPhone',
+    icon: 'Cellphone',
     children: [
       {
         title: '通讯',
