@@ -2,7 +2,7 @@
 // ECharts 包装组件：按需注册图表类型，页面只需传 option
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
-import { LineChart, BarChart, PieChart, RadarChart, HeatmapChart } from 'echarts/charts'
+import { LineChart, BarChart, PieChart, RadarChart, HeatmapChart, SankeyChart } from 'echarts/charts'
 import {
   GridComponent, TooltipComponent, LegendComponent,
   TitleComponent, VisualMapComponent, CalendarComponent, PolarComponent
@@ -12,7 +12,7 @@ import type { EChartsOption } from 'echarts'
 
 use([
   CanvasRenderer,
-  LineChart, BarChart, PieChart, RadarChart, HeatmapChart,
+  LineChart, BarChart, PieChart, RadarChart, HeatmapChart, SankeyChart,
   GridComponent, TooltipComponent, LegendComponent,
   TitleComponent, VisualMapComponent, CalendarComponent, PolarComponent
 ])

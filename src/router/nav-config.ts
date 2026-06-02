@@ -87,7 +87,8 @@ export const navTree: NavGroup[] = [
           { id: 'P202', title: '患者实时视图', routePath: '/doctor/patient-realtime/:id', menuPath: '/doctor/patient-realtime/demo', view: 'doctor/PatientRealtimePage', priority: 'v1', shell: 'pc', journey: 'J1', type: '详情' },
           { id: 'P203', title: '自救指引推送', routePath: '/doctor/rescue-guide', menuPath: '/doctor/rescue-guide', view: 'doctor/RescueGuidePage', priority: 'v1', shell: 'pc', journey: 'J1', type: '表单' },
           { id: 'P205-PC', title: '就诊记录', routePath: '/doctor/visit-record/:id', menuPath: '/doctor/visit-record/demo', view: 'doctor/VisitRecordPage', priority: 'v1', shell: 'pc', journey: 'J1', type: '表单' },
-          { id: 'P204', title: '蛇伤判定（Agent）', routePath: '/doctor/diagnosis/:id', menuPath: '/doctor/diagnosis/demo', view: 'doctor/DiagnosisPage', priority: 'v2', shell: 'pc', journey: 'J1+J3', type: '详情+表单' }
+          { id: 'P204', title: '蛇伤判定（Agent）', routePath: '/doctor/diagnosis/:id', menuPath: '/doctor/diagnosis/demo', view: 'doctor/DiagnosisPage', priority: 'v2', shell: 'pc', journey: 'J1+J3', type: '详情+表单' },
+          { id: 'P223', title: '历史判定复盘', routePath: '/doctor/diagnosis/history', menuPath: '/doctor/diagnosis/history', view: 'doctor/DiagnosisHistoryPage', priority: 'v3', shell: 'pc', journey: 'J3', type: '列表' }
         ]
       },
       {
@@ -114,6 +115,12 @@ export const navTree: NavGroup[] = [
         children: [
           { id: 'P219', title: '培训中心', routePath: '/doctor/training', menuPath: '/doctor/training', view: 'doctor/TrainingPage', priority: 'v2', shell: 'pc', journey: 'J3', type: '列表' },
           { id: 'P220', title: '培训管理', routePath: '/doctor/training/manage', menuPath: '/doctor/training/manage', view: 'doctor/TrainingManagePage', priority: 'v2', shell: 'pc', journey: 'J3', type: '列表+表单' }
+        ]
+      },
+      {
+        title: '数据协作',
+        children: [
+          { id: 'P222', title: '数据答疑', routePath: '/doctor/answer', menuPath: '/doctor/answer', view: 'doctor/AnswerPage', priority: 'v3', shell: 'pc', journey: 'J2', type: '列表+表单' }
         ]
       }
     ]
@@ -168,14 +175,26 @@ export const navTree: NavGroup[] = [
       {
         title: '数据治理',
         children: [
-          { id: 'P303', title: '数据落库总览', routePath: '/intranet/storage', menuPath: '/intranet/storage', view: 'intranet/StoragePage', priority: 'v2', shell: 'pc', journey: 'J2', type: '看板' }
+          { id: 'P303', title: '数据落库总览', routePath: '/intranet/storage', menuPath: '/intranet/storage', view: 'intranet/StoragePage', priority: 'v2', shell: 'pc', journey: 'J2', type: '看板' },
+          { id: 'P304', title: '清洗任务列表', routePath: '/intranet/cleaning', menuPath: '/intranet/cleaning', view: 'intranet/CleaningPage', priority: 'v3', shell: 'pc', journey: 'J2', type: '列表' },
+          { id: 'P305', title: '清洗任务详情', routePath: '/intranet/cleaning/:id', menuPath: '/intranet/cleaning/cl-01', view: 'intranet/CleaningDetailPage', priority: 'v3', shell: 'pc', journey: 'J2', type: '详情' },
+          { id: 'P306', title: '脱敏规则管理', routePath: '/intranet/desensitize', menuPath: '/intranet/desensitize', view: 'intranet/DesensitizePage', priority: 'v3', shell: 'pc', journey: 'J2', type: '列表+表单' },
+          { id: 'P307', title: '映射工作台', routePath: '/intranet/mapping', menuPath: '/intranet/mapping', view: 'intranet/MappingPage', priority: 'v3', shell: 'pc', journey: 'J2', type: '详情+表单' }
+        ]
+      },
+      {
+        title: '质量控制',
+        children: [
+          { id: 'P308', title: '质控工作台', routePath: '/intranet/qc', menuPath: '/intranet/qc', view: 'intranet/QcPage', priority: 'v3', shell: 'pc', journey: 'J2', type: '列表' },
+          { id: 'P309', title: '质疑工单详情', routePath: '/intranet/qc/:id', menuPath: '/intranet/qc/QT-01', view: 'intranet/QcTicketPage', priority: 'v3', shell: 'pc', journey: 'J2', type: '详情' }
         ]
       },
       {
         title: '查询统计',
         children: [
           { id: 'P311', title: '多维查询导出', routePath: '/intranet/query', menuPath: '/intranet/query', view: 'intranet/QueryPage', priority: 'v2', shell: 'pc', journey: 'J2', type: '表单+列表' },
-          { id: 'P312', title: '统计分析', routePath: '/intranet/stats', menuPath: '/intranet/stats', view: 'intranet/StatsPage', priority: 'v2', shell: 'pc', journey: 'J2', type: '看板' }
+          { id: 'P312', title: '统计分析', routePath: '/intranet/stats', menuPath: '/intranet/stats', view: 'intranet/StatsPage', priority: 'v2', shell: 'pc', journey: 'J2', type: '看板' },
+          { id: 'P313', title: '科研 CRF', routePath: '/intranet/crf', menuPath: '/intranet/crf', view: 'intranet/CrfPage', priority: 'v3', shell: 'pc', journey: '', type: '表单' }
         ]
       },
       {
@@ -202,6 +221,12 @@ export const navTree: NavGroup[] = [
         title: '演示',
         children: [
           { id: 'P001', title: '演示模式说明', routePath: '/demo-guide', menuPath: '/demo-guide', view: 'DemoGuidePage', priority: 'v2', shell: 'pc', journey: '', type: '详情' }
+        ]
+      },
+      {
+        title: '数据大屏',
+        children: [
+          { id: 'P401', title: '数据流转大屏', routePath: '/system/dashboard', menuPath: '/system/dashboard', view: 'system/DashboardPage', priority: 'v3', shell: 'pc', journey: 'J2', type: '看板' }
         ]
       }
     ]

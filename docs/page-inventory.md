@@ -82,8 +82,8 @@
 | P219 | 培训中心 | 医生 PC + APP | J3 | 列表 | v2 | `/doctor/training` | 0.5d | mock | 资料浏览 |
 | P220 | 培训管理 | 医生 PC | J3 | 列表+表单 | v2 | `/doctor/training/manage` | 1d | mock | 上传/审核 |
 | P221 | 医生 APP 收件箱 | 医生 APP | J3 | 列表 | v1 | `/doctor-app/inbox` | 0.5d | mock | 聚合转诊/MDT/消息 |
-| P222 | 数据答疑（医生回答质疑） | 医生 PC + APP | J2 | 列表+表单 | v3 | `/doctor/answer` | 1d | 未开始 | 跨主线协作 |
-| P223 | 历史判定复盘 | 医生 PC | J3 | 列表 | v3 | `/doctor/diagnosis/history` | 0.5d | 未开始 | Agent 采纳率 |
+| P222 | 数据答疑（医生回答质疑） | 医生 PC + APP | J2 | 列表+表单 | v3 | `/doctor/answer` | 1d | mock | 跨主线协作 |
+| P223 | 历史判定复盘 | 医生 PC | J3 | 列表 | v3 | `/doctor/diagnosis/history` | 0.5d | mock | Agent 采纳率 |
 
 ### 三、内网端 - 专病库（13 项）
 
@@ -92,16 +92,16 @@
 | P301 | 数据接入监控 | 内网 PC | J2 | 看板 | v1 | `/intranet/ingest` | 1d | mock | 7 个源的状态 + 冷热双通道 Tab |
 | P302 | 同步异常详情 | 内网 PC | J2 | 详情 | v2 | `/intranet/ingest/error/:id` | 0.5d | mock | 错误堆栈 + 重试 |
 | P303 | 数据落库总览 | 内网 PC | J2 | 看板 | v2 | `/intranet/storage` | 1d | mock | 分桶占比 |
-| P304 | 清洗任务列表 | 内网 PC | J2 | 列表 | v3 | `/intranet/cleaning` | 0.5d | 未开始 | 输入/输出/丢弃 |
-| P305 | 清洗任务详情 | 内网 PC | J2 | 详情 | v3 | `/intranet/cleaning/:id` | 1d | 未开始 | 前后对比 |
-| P306 | 脱敏规则管理 | 内网 PC | J2 | 列表+表单 | v3 | `/intranet/desensitize` | 1d | 未开始 | 规则 + 预览 |
-| P307 | 映射工作台 | 内网 PC | J2 | 详情+表单 | v3 | `/intranet/mapping` | 1.5d | 未开始 | NLP 抽取 + 人工纠正 |
-| P308 | 质控工作台 | 内网 PC | J2 | 列表 | v3 | `/intranet/qc` | 1d | 未开始 | 校验报告 |
-| P309 | 质疑工单详情 | 内网 PC | J2 | 详情 | v3 | `/intranet/qc/:id` | 0.5d | 未开始 | 质疑/答疑/锁定 |
+| P304 | 清洗任务列表 | 内网 PC | J2 | 列表 | v3 | `/intranet/cleaning` | 0.5d | mock | 输入/输出/丢弃 |
+| P305 | 清洗任务详情 | 内网 PC | J2 | 详情 | v3 | `/intranet/cleaning/:id` | 1d | mock | 前后对比 |
+| P306 | 脱敏规则管理 | 内网 PC | J2 | 列表+表单 | v3 | `/intranet/desensitize` | 1d | mock | 规则 + 预览 |
+| P307 | 映射工作台 | 内网 PC | J2 | 详情+表单 | v3 | `/intranet/mapping` | 1.5d | mock | NLP 抽取 + 人工纠正 |
+| P308 | 质控工作台 | 内网 PC | J2 | 列表 | v3 | `/intranet/qc` | 1d | mock | 校验报告 |
+| P309 | 质疑工单详情 | 内网 PC | J2 | 详情 | v3 | `/intranet/qc/:id` | 0.5d | mock | 质疑/答疑/锁定 |
 | P310 | 患者 360（内网视角） | 内网 PC | J3 | 详情 | v2 | `/intranet/360/:id` | — | mock | 复用 P214 组件，mode=intranet |
 | P311 | 多维查询导出 | 内网 PC | J2 | 表单+列表 | v2 | `/intranet/query` | 1.5d | mock | 维度选择 + 结果 |
 | P312 | 统计分析 | 内网 PC | J2 | 看板 | v2 | `/intranet/stats` | 1.5d | mock | ECharts |
-| P313 | 科研 CRF | 内网 PC | — | 表单 | v3 | `/intranet/crf` | 1d | 未开始 | 占位 |
+| P313 | 科研 CRF | 内网 PC | — | 表单 | v3 | `/intranet/crf` | 1d | mock | 分节表单 + 导出 |
 
 ### 四、系统能力 + 全局（5 项）
 
@@ -109,7 +109,7 @@
 |---|---|---|---|---|---|---|---|---|---|
 | P000 | 总入口首页 | 全局 | — | 工作台 | v1 | `/home` | 1d | mock | 4 条主线导航 + 数据流大屏入口 + 演示模式开关 |
 | P001 | 演示模式说明 | 全局 | — | 详情 | v2 | `/demo-guide` | 0.5d | mock | 解释每条主线的脚本 |
-| P401 | 数据流转大屏 | 内网 PC | J2 | 看板（大屏） | v3 | `/system/dashboard` | 3d | 未开始 | mermaid 落地 + 钻取 |
+| P401 | 数据流转大屏 | 内网 PC | J2 | 看板（大屏） | v3 | `/system/dashboard` | 3d | mock | ECharts 桑基图 + 实时指标 |
 | P402 | 角色与权限 | 内网 PC | J3 | 列表+表单 | v1 | `/system/permissions` | 1d | mock | 角色/用户/数据权限 |
 | P403 | 医院与资质 | 内网 PC | J1 | 列表+表单 | v1 | `/system/hospitals` | 1d | mock | 维护 + 库存接入 |
 

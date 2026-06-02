@@ -66,3 +66,22 @@ export const patient360: Record<string, Patient360Event[]> = {
 export function getPatient360(id: string): Patient360Event[] {
   return patient360[id] ?? []
 }
+
+// ───── 历史判定复盘（P223，Agent 采纳率）─────
+export interface DiagnosisHistory {
+  caseId: string
+  patientName: string
+  agentTop: string
+  agentConfidence: number
+  doctorFinal: string
+  adopted: boolean          // 医生是否采纳 Agent 首选
+  date: string
+}
+
+export const diagnosisHistory: DiagnosisHistory[] = [
+  { caseId: 'C-2026-0312', patientName: '张建国', agentTop: '竹叶青', agentConfidence: 72, doctorFinal: '竹叶青', adopted: true, date: '06-01' },
+  { caseId: 'C-2026-0298', patientName: '李德海', agentTop: '蝮蛇', agentConfidence: 58, doctorFinal: '五步蛇', adopted: false, date: '06-01' },
+  { caseId: 'C-2026-0277', patientName: '周国强', agentTop: '银环蛇', agentConfidence: 81, doctorFinal: '银环蛇', adopted: true, date: '05-30' },
+  { caseId: 'C-2026-0261', patientName: '王秀英', agentTop: '竹叶青', agentConfidence: 66, doctorFinal: '竹叶青', adopted: true, date: '05-28' },
+  { caseId: 'C-2026-0240', patientName: '陈大山', agentTop: '眼镜蛇', agentConfidence: 49, doctorFinal: '蝮蛇', adopted: false, date: '05-25' }
+]
