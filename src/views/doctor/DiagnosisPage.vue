@@ -45,15 +45,18 @@ function confirm() {
   <div class="diag-page">
     <div class="page-head">
       <div>
-        <h2>蛇伤判定（Agent 辅助）</h2>
-        <p class="sub">{{ ev ? `${ev.patientName} · ${ev.id}` : '请从救助工作台进入具体患者' }} · Agent 给出建议，医生最终决策</p>
+        <h2>
+          蛇伤判定（AI 占位）
+          <span class="priority-tag v2">v2</span>
+        </h2>
+        <p class="sub">{{ ev ? `${ev.patientName} · ${ev.id}` : '请从救助工作台进入具体患者' }} · V2 阶段：AI 仅辅助不诊断，医生最终决策</p>
       </div>
       <MockDataLabel />
     </div>
 
     <el-row :gutter="16">
       <el-col :span="13">
-        <AlgoPlaceholder kind="agent" title="蛇伤判定 Agent" description="融合图像识别 + 症状 + 流行病学，给出蛇种排序与处置建议">
+        <AlgoPlaceholder kind="agent" title="[V2] 蛇伤判定 Agent" description="V2 阶段占位：融合图像识别 + 症状 + 流行病学，给出蛇种排序与处置建议。当前仅展示 Mock 数据。">
           <div class="rankings">
             <div v-for="r in agentDiagnosis.rankings" :key="r.snakeId" class="rk">
               <div class="rk-top">
@@ -107,7 +110,10 @@ function confirm() {
               <el-button type="primary" @click="confirm">确认判定并填写就诊记录</el-button>
             </el-form-item>
           </el-form>
-          <div class="audit">医生采纳/否决会回流为 Agent 训练样本（采纳率见 P223 历史判定复盘）</div>
+          <div class="audit">
+            <el-tag size="small" type="warning" effect="plain">V2</el-tag>
+            医生采纳/否决会回流为 Agent 训练样本（采纳率见 P223 历史判定复盘 · V3）
+          </div>
         </el-card>
       </el-col>
     </el-row>

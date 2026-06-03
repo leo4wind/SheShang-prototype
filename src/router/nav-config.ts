@@ -14,6 +14,8 @@ export interface NavLeaf {
   shell: Shell
   journey: string     // 'J1' | 'J1+J4' | ''
   type: string        // 工作台/列表/详情/表单/看板
+  hidden?: boolean    // true = 路由保留但左菜单不显示
+  depends?: string    // 依赖标注，如 'V2 AI 辅助'
 }
 
 export interface NavSubGroup {
@@ -61,10 +63,10 @@ export const navTree: NavGroup[] = [
       {
         title: '健康陪护',
         children: [
-          { id: 'P108', title: '我的随访计划', routePath: '/patient/care/timeline', menuPath: '/patient/care/timeline', view: 'patient/care/TimelinePage', priority: 'v1', shell: 'phone', journey: 'J4', type: '详情' },
-          { id: 'P109', title: '复查详情', routePath: '/patient/care/recheck/:id', menuPath: '/patient/care/recheck/demo', view: 'patient/care/RecheckPage', priority: 'v1', shell: 'phone', journey: 'J4', type: '详情' },
-          { id: 'P110', title: '用药打卡', routePath: '/patient/care/checkin', menuPath: '/patient/care/checkin', view: 'patient/care/CheckinPage', priority: 'v1', shell: 'phone', journey: 'J4', type: '工作台' },
-          { id: 'P111', title: '陪护对话', routePath: '/patient/care/chat', menuPath: '/patient/care/chat', view: 'patient/care/ChatPage', priority: 'v1', shell: 'phone', journey: 'J4', type: '工作台' },
+          { id: 'P108', title: '我的随访计划', routePath: '/patient/care/timeline', menuPath: '/patient/care/timeline', view: 'patient/care/TimelinePage', priority: 'v2', shell: 'phone', journey: 'J4', type: '详情', depends: 'V2 医生后台' },
+          { id: 'P109', title: '复查详情', routePath: '/patient/care/recheck/:id', menuPath: '/patient/care/recheck/demo', view: 'patient/care/RecheckPage', priority: 'v2', shell: 'phone', journey: 'J4', type: '详情', depends: 'V2 医生后台' },
+          { id: 'P110', title: '用药打卡', routePath: '/patient/care/checkin', menuPath: '/patient/care/checkin', view: 'patient/care/CheckinPage', priority: 'v2', shell: 'phone', journey: 'J4', type: '工作台', depends: 'V2 医生后台' },
+          { id: 'P111', title: '陪护对话', routePath: '/patient/care/chat', menuPath: '/patient/care/chat', view: 'patient/care/ChatPage', priority: 'v2', shell: 'phone', journey: 'J4', type: '工作台', depends: 'V2 医生后台' },
           { id: 'P112', title: '打卡日历', routePath: '/patient/care/calendar', menuPath: '/patient/care/calendar', view: 'patient/care/CalendarPage', priority: 'v2', shell: 'phone', journey: 'J4', type: '详情' },
           { id: 'P113', title: '随访问卷', routePath: '/patient/care/survey/:id', menuPath: '/patient/care/survey/demo', view: 'patient/care/SurveyPage', priority: 'v2', shell: 'phone', journey: 'J4', type: '表单' },
           { id: 'P114', title: '知识中心', routePath: '/patient/care/knowledge', menuPath: '/patient/care/knowledge', view: 'patient/care/KnowledgePage', priority: 'v2', shell: 'phone', journey: 'J4', type: '列表' },
@@ -87,34 +89,35 @@ export const navTree: NavGroup[] = [
           { id: 'P202', title: '患者实时视图', routePath: '/doctor/patient-realtime/:id', menuPath: '/doctor/patient-realtime/demo', view: 'doctor/PatientRealtimePage', priority: 'v1', shell: 'pc', journey: 'J1', type: '详情' },
           { id: 'P203', title: '自救指引推送', routePath: '/doctor/rescue-guide', menuPath: '/doctor/rescue-guide', view: 'doctor/RescueGuidePage', priority: 'v1', shell: 'pc', journey: 'J1', type: '表单' },
           { id: 'P205-PC', title: '就诊记录', routePath: '/doctor/visit-record/:id', menuPath: '/doctor/visit-record/demo', view: 'doctor/VisitRecordPage', priority: 'v1', shell: 'pc', journey: 'J1', type: '表单' },
-          { id: 'P204', title: '蛇伤判定（Agent）', routePath: '/doctor/diagnosis/:id', menuPath: '/doctor/diagnosis/demo', view: 'doctor/DiagnosisPage', priority: 'v2', shell: 'pc', journey: 'J1+J3', type: '详情+表单' },
+          { id: 'P204-V1', title: '蛇伤判定（规则表单）', routePath: '/doctor/diagnosis-rule/:id', menuPath: '/doctor/diagnosis-rule/demo', view: 'doctor/DiagnosisRulePage', priority: 'v1', shell: 'pc', journey: 'J1', type: '表单' },
+          { id: 'P204', title: '蛇伤判定（AI 占位）', routePath: '/doctor/diagnosis/:id', menuPath: '/doctor/diagnosis/demo', view: 'doctor/DiagnosisPage', priority: 'v2', shell: 'pc', journey: 'J1+J3', type: '详情+表单', depends: 'V2 AI 辅助' },
           { id: 'P223', title: '历史判定复盘', routePath: '/doctor/diagnosis/history', menuPath: '/doctor/diagnosis/history', view: 'doctor/DiagnosisHistoryPage', priority: 'v3', shell: 'pc', journey: 'J3', type: '列表' }
         ]
       },
       {
         title: '多中心分诊',
         children: [
-          { id: 'P206', title: '转诊申请', routePath: '/doctor/referral/new', menuPath: '/doctor/referral/new', view: 'doctor/ReferralNewPage', priority: 'v1', shell: 'pc', journey: 'J3', type: '表单' },
-          { id: 'P208', title: '转诊跟踪', routePath: '/doctor/referral/:id', menuPath: '/doctor/referral/demo', view: 'doctor/ReferralPage', priority: 'v1', shell: 'pc', journey: 'J3', type: '详情' },
-          { id: 'P209', title: 'MDT 邀请', routePath: '/doctor/mdt/new', menuPath: '/doctor/mdt/new', view: 'doctor/MdtNewPage', priority: 'v1', shell: 'pc', journey: 'J3', type: '表单' },
-          { id: 'P211-PC', title: 'MDT 会诊室', routePath: '/doctor/mdt/room/:id', menuPath: '/doctor/mdt/room/demo', view: 'doctor/MdtRoomPage', priority: 'v1', shell: 'pc', journey: 'J3', type: '工作台' },
-          { id: 'P212', title: '共享患者', routePath: '/doctor/share', menuPath: '/doctor/share', view: 'doctor/SharePage', priority: 'v1', shell: 'pc', journey: 'J3', type: '表单' },
-          { id: 'P213-PC', title: '共享给我的患者', routePath: '/doctor/shared', menuPath: '/doctor/shared', view: 'doctor/SharedPage', priority: 'v1', shell: 'pc', journey: 'J3', type: '列表' },
+          { id: 'P206', title: '转诊申请', routePath: '/doctor/referral/new', menuPath: '/doctor/referral/new', view: 'doctor/ReferralNewPage', priority: 'v2', shell: 'pc', journey: 'J3', type: '表单', depends: 'V2 多中心协同' },
+          { id: 'P208', title: '转诊跟踪', routePath: '/doctor/referral/:id', menuPath: '/doctor/referral/demo', view: 'doctor/ReferralPage', priority: 'v2', shell: 'pc', journey: 'J3', type: '详情', depends: 'V2 多中心协同' },
+          { id: 'P209', title: 'MDT 邀请', routePath: '/doctor/mdt/new', menuPath: '/doctor/mdt/new', view: 'doctor/MdtNewPage', priority: 'v2', shell: 'pc', journey: 'J3', type: '表单', depends: 'V2 多中心协同' },
+          { id: 'P211-PC', title: 'MDT 会诊室', routePath: '/doctor/mdt/room/:id', menuPath: '/doctor/mdt/room/demo', view: 'doctor/MdtRoomPage', priority: 'v2', shell: 'pc', journey: 'J3', type: '工作台', depends: 'V2 多中心协同' },
+          { id: 'P212', title: '共享患者', routePath: '/doctor/share', menuPath: '/doctor/share', view: 'doctor/SharePage', priority: 'v2', shell: 'pc', journey: 'J3', type: '表单', depends: 'V2 多中心协同' },
+          { id: 'P213-PC', title: '共享给我的患者', routePath: '/doctor/shared', menuPath: '/doctor/shared', view: 'doctor/SharedPage', priority: 'v2', shell: 'pc', journey: 'J3', type: '列表', depends: 'V2 多中心协同' },
           { id: 'P214', title: '患者 360', routePath: '/doctor/patient360/:id', menuPath: '/doctor/patient360/p-02', view: 'doctor/Patient360Page', priority: 'v2', shell: 'pc', journey: 'J3', type: '详情' }
         ]
       },
       {
         title: '患者管理',
         children: [
-          { id: 'P215', title: '我的患者（群组）', routePath: '/doctor/patients', menuPath: '/doctor/patients', view: 'doctor/PatientsPage', priority: 'v2', shell: 'pc', journey: 'J4', type: '看板' },
-          { id: 'P218', title: '随访计划管理', routePath: '/doctor/followup/plans', menuPath: '/doctor/followup/plans', view: 'doctor/FollowupPlansPage', priority: 'v2', shell: 'pc', journey: 'J4', type: '列表+表单' }
+          { id: 'P215', title: '我的患者（群组）', routePath: '/doctor/patients', menuPath: '/doctor/patients', view: 'doctor/PatientsPage', priority: 'v2', shell: 'pc', journey: 'J4', type: '看板', depends: 'V2 随访闭环' },
+          { id: 'P218', title: '随访计划管理', routePath: '/doctor/followup/plans', menuPath: '/doctor/followup/plans', view: 'doctor/FollowupPlansPage', priority: 'v2', shell: 'pc', journey: 'J4', type: '列表+表单', depends: 'V2 随访闭环' }
         ]
       },
       {
         title: '培训',
         children: [
-          { id: 'P219', title: '培训中心', routePath: '/doctor/training', menuPath: '/doctor/training', view: 'doctor/TrainingPage', priority: 'v2', shell: 'pc', journey: 'J3', type: '列表' },
-          { id: 'P220', title: '培训管理', routePath: '/doctor/training/manage', menuPath: '/doctor/training/manage', view: 'doctor/TrainingManagePage', priority: 'v2', shell: 'pc', journey: 'J3', type: '列表+表单' }
+          { id: 'P219', title: '培训中心', routePath: '/doctor/training', menuPath: '/doctor/training', view: 'doctor/TrainingPage', priority: 'v2', shell: 'pc', journey: 'J3', type: '列表', depends: 'V2 培训体系' },
+          { id: 'P220', title: '培训管理', routePath: '/doctor/training/manage', menuPath: '/doctor/training/manage', view: 'doctor/TrainingManagePage', priority: 'v2', shell: 'pc', journey: 'J3', type: '列表+表单', depends: 'V2 培训体系' }
         ]
       },
       {
@@ -133,22 +136,22 @@ export const navTree: NavGroup[] = [
       {
         title: '通讯',
         children: [
-          { id: 'P221', title: '收件箱', routePath: '/doctor-app/inbox', menuPath: '/doctor-app/inbox', view: 'doctor-app/InboxPage', priority: 'v1', shell: 'phone', journey: 'J3', type: '列表' }
+          { id: 'P221', title: '收件箱', routePath: '/doctor-app/inbox', menuPath: '/doctor-app/inbox', view: 'doctor-app/InboxPage', priority: 'v2', shell: 'phone', journey: 'J3', type: '列表', depends: 'V2 医生 APP' }
         ]
       },
       {
         title: '移动就诊',
         children: [
-          { id: 'P205-APP', title: '就诊记录', routePath: '/doctor-app/visit-record/:id', menuPath: '/doctor-app/visit-record/demo', view: 'doctor-app/VisitRecordPage', priority: 'v1', shell: 'phone', journey: 'J1', type: '表单' }
+          { id: 'P205-APP', title: '就诊记录', routePath: '/doctor-app/visit-record/:id', menuPath: '/doctor-app/visit-record/demo', view: 'doctor-app/VisitRecordPage', priority: 'v2', shell: 'phone', journey: 'J1', type: '表单', depends: 'V2 医生 APP' }
         ]
       },
       {
         title: '移动分诊',
         children: [
-          { id: 'P207', title: '转诊申请详情', routePath: '/doctor-app/referral/:id', menuPath: '/doctor-app/referral/demo', view: 'doctor-app/ReferralPage', priority: 'v1', shell: 'phone', journey: 'J3', type: '详情' },
-          { id: 'P210', title: 'MDT 邀请详情', routePath: '/doctor-app/mdt/:id', menuPath: '/doctor-app/mdt/demo', view: 'doctor-app/MdtPage', priority: 'v1', shell: 'phone', journey: 'J3', type: '详情' },
-          { id: 'P211-APP', title: 'MDT 会诊室', routePath: '/doctor-app/mdt/room/:id', menuPath: '/doctor-app/mdt/room/demo', view: 'doctor-app/MdtRoomPage', priority: 'v1', shell: 'phone', journey: 'J3', type: '工作台' },
-          { id: 'P213-APP', title: '共享给我的患者', routePath: '/doctor-app/shared', menuPath: '/doctor-app/shared', view: 'doctor-app/SharedPage', priority: 'v1', shell: 'phone', journey: 'J3', type: '列表' }
+          { id: 'P207', title: '转诊申请详情', routePath: '/doctor-app/referral/:id', menuPath: '/doctor-app/referral/demo', view: 'doctor-app/ReferralPage', priority: 'v2', shell: 'phone', journey: 'J3', type: '详情', depends: 'V2 医生 APP' },
+          { id: 'P210', title: 'MDT 邀请详情', routePath: '/doctor-app/mdt/:id', menuPath: '/doctor-app/mdt/demo', view: 'doctor-app/MdtPage', priority: 'v2', shell: 'phone', journey: 'J3', type: '详情', depends: 'V2 医生 APP' },
+          { id: 'P211-APP', title: 'MDT 会诊室', routePath: '/doctor-app/mdt/room/:id', menuPath: '/doctor-app/mdt/room/demo', view: 'doctor-app/MdtRoomPage', priority: 'v2', shell: 'phone', journey: 'J3', type: '工作台', depends: 'V2 医生 APP' },
+          { id: 'P213-APP', title: '共享给我的患者', routePath: '/doctor-app/shared', menuPath: '/doctor-app/shared', view: 'doctor-app/SharedPage', priority: 'v2', shell: 'phone', journey: 'J3', type: '列表', depends: 'V2 医生 APP' }
         ]
       },
       {
@@ -168,7 +171,7 @@ export const navTree: NavGroup[] = [
       {
         title: '数据接入',
         children: [
-          { id: 'P301', title: '数据接入监控（含冷热双通道）', routePath: '/intranet/ingest', menuPath: '/intranet/ingest', view: 'intranet/IngestPage', priority: 'v1', shell: 'pc', journey: 'J2', type: '看板' },
+          { id: 'P301', title: '数据接入监控', routePath: '/intranet/ingest', menuPath: '/intranet/ingest', view: 'intranet/IngestPage', priority: 'v1', shell: 'pc', journey: 'J2', type: '看板', hidden: true },
           { id: 'P302', title: '同步异常详情', routePath: '/intranet/ingest/error/:id', menuPath: '/intranet/ingest/error/ie-01', view: 'intranet/IngestErrorPage', priority: 'v2', shell: 'pc', journey: 'J2', type: '详情' }
         ]
       },

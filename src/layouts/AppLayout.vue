@@ -3,14 +3,14 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { navTree, findGroupByPath } from '@/router/nav-config'
-import { useAppStore, ROLE_LABEL, type DemoRole } from '@/stores/app'
+import { useAppStore, VERSION_LABEL, type ViewVersion } from '@/stores/app'
 import PhoneShell from '@/components/PhoneShell.vue'
 
 const route = useRoute()
 const appStore = useAppStore()
-const { role, demoMode, pushCount, sidebarCollapsed } = storeToRefs(appStore)
+const { viewVersion, demoMode, pushCount, sidebarCollapsed } = storeToRefs(appStore)
 
-const roleOptions = (Object.keys(ROLE_LABEL) as DemoRole[]).map((k) => ({ value: k, label: ROLE_LABEL[k] }))
+const versionOptions = (Object.keys(VERSION_LABEL) as ViewVersion[]).map((k) => ({ value: k, label: VERSION_LABEL[k] }))
 
 const matched = computed(() => findGroupByPath(route.path))
 const groupTitle = computed(() => matched.value?.group.title ?? (route.path === '/home' ? '总入口' : ''))
@@ -34,11 +34,11 @@ const priorityTagType = computed(() => {
   <el-container class="app-layout">
     <el-aside :width="sidebarCollapsed ? '64px' : '280px'" class="aside">
       <div class="aside-header">
-        <el-icon :size="22"><Avatar /></el-icon>
+        <el-icon :size="22"><Filter /></el-icon>
         <div v-if="!sidebarCollapsed" class="role-info">
-          <div class="role-label">演示角色</div>
-          <el-select v-model="role" size="small" placeholder="选择角色">
-            <el-option v-for="o in roleOptions" :key="o.value" :value="o.value" :label="o.label" />
+          <div class="role-label">版本视图</div>
+          <el-select v-model="viewVersion" size="small" placeholder="选择版本">
+            <el-option v-for="o in versionOptions" :key="o.value" :value="o.value" :label="o.label" />
           </el-select>
         </div>
       </div>
@@ -60,21 +60,25 @@ const priorityTagType = computed(() => {
           <template #title>版本规划</template>
         </el-menu-item>
 
-        <el-sub-menu v-for="group in navTree" :key="group.key" :index="group.key">
+        <el-sub-menu
+          v-for="group in navTree.filter(g => g.children.some(s => s.children.some(l => !l.hidden && appStore.isPriorityAllowed(l.priority))))"
+          :key="group.key"
+          :index="group.key"
+        >
           <template #title>
             <el-icon><component :is="group.icon" /></el-icon>
             <span>{{ group.title }}</span>
           </template>
 
           <el-sub-menu
-            v-for="sub in group.children"
+            v-for="sub in group.children.filter(s => s.children.some(l => !l.hidden && appStore.isPriorityAllowed(l.priority)))"
             :key="group.key + '-' + sub.title"
             :index="group.key + '-' + sub.title"
           >
             <template #title>
               <span>{{ sub.title }}</span>
             </template>
-            <el-menu-item v-for="leaf in sub.children" :key="leaf.id" :index="leaf.menuPath">
+            <el-menu-item v-for="leaf in sub.children.filter(l => !l.hidden && appStore.isPriorityAllowed(l.priority))" :key="leaf.id" :index="leaf.menuPath">
               <span class="leaf-line">
                 <span class="leaf-title">{{ leaf.title }}</span>
                 <span class="priority-tag" :class="leaf.priority">{{ leaf.priority }}</span>
@@ -102,6 +106,7 @@ const priorityTagType = computed(() => {
             {{ route.meta.priority }}
           </el-tag>
           <el-tag v-if="route.meta.journey" size="small" effect="plain">{{ route.meta.journey }}</el-tag>
+          <el-tag v-if="route.meta.depends" size="small" type="warning" effect="plain">依赖：{{ route.meta.depends }}</el-tag>
         </div>
         <div class="header-right">
           <span v-if="demoMode" class="push-counter">

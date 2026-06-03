@@ -55,6 +55,21 @@ function lock() {
           <div v-else class="waiting">
             <el-icon><Clock /></el-icon> 等待医生在「数据答疑」回答…
           </div>
+
+          <el-divider />
+
+          <div class="source-ref">
+            <div class="sr-label">
+              <el-icon><Document /></el-icon>
+              D2 原文依据
+              <el-tag size="small" type="info" effect="plain">V3</el-tag>
+            </div>
+            <p class="sr-desc">查阅数据源头文件，核实质疑字段的原始值与修改依据。</p>
+            <el-button size="small" type="primary" text>
+              <el-icon><View /></el-icon>
+              查阅原文 / 复核依据
+            </el-button>
+          </div>
         </el-card>
       </el-col>
 
@@ -93,4 +108,26 @@ function lock() {
 .waiting { color: #e6a23c; font-size: 13px; display: flex; align-items: center; gap: 6px; padding: 12px 0; border-top: 1px dashed #ebeef5; }
 .full { width: 100%; margin: 0 0 10px; }
 .hint { font-size: 12px; color: #909399; line-height: 1.6; }
+
+.source-ref {
+  background: #f4f4f5;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.sr-label {
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.sr-desc {
+  font-size: 12px;
+  color: #909399;
+  margin: 0 0 8px;
+  line-height: 1.5;
+}
 </style>

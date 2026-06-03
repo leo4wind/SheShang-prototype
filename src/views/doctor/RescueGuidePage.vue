@@ -84,6 +84,9 @@ function push() {
       <el-button type="primary" :disabled="!selectedTpl.length" @click="push">
         推送选中指引（{{ selectedTpl.length }}）
       </el-button>
+      <el-button v-if="ev" type="success" plain @click="router.push(`/doctor/diagnosis-rule/${ev.id}`)">
+        前往蛇伤判定 →
+      </el-button>
       <el-button v-if="ev" @click="router.push(`/doctor/patient-realtime/${ev.id}`)">返回患者视图</el-button>
     </div>
   </div>

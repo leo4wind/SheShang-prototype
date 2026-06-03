@@ -42,7 +42,9 @@ for (const group of navTree) {
           groupTitle: group.title,
           subGroup: sub.title,
           journey: leaf.journey,
-          type: leaf.type
+          type: leaf.type,
+          hidden: leaf.hidden,
+          depends: leaf.depends
         }
       })
     }

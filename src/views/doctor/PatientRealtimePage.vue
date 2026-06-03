@@ -138,6 +138,7 @@ function gotoRecord() {
     <div class="action-bar">
       <el-button v-if="ev.status === 'reported' || ev.status === 'hospital' || ev.status === 'sos'" type="primary" @click="accept">接诊此患者</el-button>
       <el-button type="warning" plain @click="gotoGuide">推送自救指引</el-button>
+      <el-button type="primary" plain @click="router.push(`/doctor/diagnosis-rule/${ev.id}`)">蛇伤判定</el-button>
       <el-button type="success" plain @click="gotoRecord">填写就诊记录</el-button>
     </div>
   </div>

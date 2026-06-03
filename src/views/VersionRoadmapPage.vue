@@ -2,48 +2,45 @@
 const versions = [
   {
     key: 'v1',
-    title: '基础闭环',
+    title: '最小急救接诊闭环',
     subtitle: '先把核心业务跑通',
     color: '#67c23a',
-    period: 'W2 末 - W5',
-    points: ['急救闭环', '权限 / 系统底座', '医生协作基础', '患者陪护基础'],
-    description: '围绕患者求救、医生接诊、多中心协作和基础陪护，形成可演示、可走查的第一版主流程。'
+    points: ['患者 SOS + 就近医院', '医生救助工作台', '蛇伤判定（规则表单）', '手填就诊记录', '患者查看就诊历史', '旧专病库最小导入', '角色与权限 / 医院与资质'],
+    description: '围绕患者求救→医生接诊→规则判定→就诊记录→患者查看，形成可演示的完整故事。不依赖任何 V2/V3 能力。'
   },
   {
     key: 'v2',
-    title: '能力增强',
-    subtitle: '补智能、补视图、补运营',
+    title: '多中心协同 + 持续服务',
+    subtitle: '补协同、补随访、补运营',
     color: '#e6a23c',
-    period: 'W5 - W7',
-    points: ['蛇伤判定与 Agent', '患者 360', '陪护补全', '数据治理可视', '培训中心', '演示说明'],
-    description: '在 v1 闭环之上增强辅助诊疗、患者全景、随访运营、查询统计和培训能力。'
+    points: ['医生 APP 整体', '转诊 / MDT / 共享患者', '患者 360', '蛇伤判定 AI 占位', '随访计划 / 用药打卡 / 复查', '医患消息 / 培训中心', 'HIS/LIS/PACS/120 接入', '落库总览 / 多维查询 / 统计分析'],
+    description: '在 V1 闭环之上增强跨院协同、患者全景、随访运营、查询统计和培训能力。'
   },
   {
     key: 'v3',
-    title: '治理与科研',
+    title: '数据治理 + 科研 + 智能化',
     subtitle: '做深数据底座和亮点大屏',
     color: '#909399',
-    period: 'W8+',
-    points: ['清洗 / 脱敏 / 映射 / 质控', '科研 CRF', '数据流转大屏', '医生答疑', '历史判定复盘'],
-    description: '聚焦数据治理工作台、科研沉淀、质量闭环和展示型大屏，作为后续高价值增强。'
+    points: ['脱敏 / 清洗 / 映射', '质控工作台 + 查阅原文', '科研 CRF', '数据流转大屏', '历史判定复盘', 'AI 图像识别 / Agent / 治疗路径', '随访问卷 / 知识中心 / 打卡日历'],
+    description: '聚焦数据治理工作台、科研沉淀、质量闭环、AI 智能化和展示型大屏。'
   }
 ]
 
 const flowSteps = [
   {
     key: 'v1',
-    title: 'v1 打通核心业务闭环',
-    detail: '患者求救 → 医生接诊 → 协作转诊 → 陪护跟进'
+    title: 'V1 急救接诊闭环',
+    detail: 'SOS → 接诊 → 规则判定 → 就诊记录 → 患者查看'
   },
   {
     key: 'v2',
-    title: 'v2 增强智能与数据可视',
-    detail: 'Agent 判定、患者 360、查询统计、培训运营'
+    title: 'V2 协同随访',
+    detail: '转诊/MDT → 患者360 → 随访闭环 → 医患消息'
   },
   {
     key: 'v3',
-    title: 'v3 完善治理、科研与大屏',
-    detail: '清洗质控、CRF、答疑复盘、数据流转大屏'
+    title: 'V3 治理科研',
+    detail: '质控闭环 → CRF → AI → 数据大屏'
   }
 ]
 </script>
@@ -53,8 +50,8 @@ const flowSteps = [
     <section class="hero">
       <div>
         <el-tag effect="plain" class="hero-tag">项目规划</el-tag>
-        <h1>版本规划：v1 / v2 / v3 做什么</h1>
-        <p>用一个页面对齐建设节奏：v1 先跑通核心闭环，v2 增强智能和数据可视，v3 做深数据治理、科研和大屏。</p>
+        <h1>版本规划：V1 / V2 / V3</h1>
+        <p>用一个页面对齐建设节奏：V1 先跑通急救接诊闭环，V2 增强多中心协同和随访服务，V3 做深数据治理、科研和智能化。</p>
       </div>
       <div class="hero-metric">
         <strong>3</strong>
@@ -69,7 +66,7 @@ const flowSteps = [
             <span class="version-badge" :style="{ background: version.color }">{{ version.key }}</span>
             <span class="version-title">{{ version.title }}</span>
           </div>
-          <el-tag size="small" effect="plain">{{ version.period }}</el-tag>
+          <el-tag size="small" effect="plain">{{ version.key }}</el-tag>
         </div>
         <p class="version-subtitle">{{ version.subtitle }}</p>
         <p class="version-desc">{{ version.description }}</p>
@@ -79,6 +76,7 @@ const flowSteps = [
             :key="point"
             class="point-tag"
             effect="plain"
+            size="small"
           >
             {{ point }}
           </el-tag>

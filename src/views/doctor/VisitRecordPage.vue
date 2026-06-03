@@ -27,10 +27,13 @@ const agentSuggestion = {
   notes: '竹叶青为血循毒，关注出血倾向；患者有青霉素过敏史，避免相关抗生素'
 }
 
+// 如果有规则判定结果，自动预填
+const pending = computed(() => ev.value?.pendingDiagnosis)
+
 const form = reactive<VisitRecord>({
-  snakeJudgment: '',
-  serumName: '',
-  serumDose: '',
+  snakeJudgment: pending.value?.snakeName ?? '',
+  serumName: pending.value?.serum ?? '',
+  serumDose: pending.value?.dose ?? '',
   treatment: '',
   doctorName: '王医生',
   recordedAt: ''
@@ -76,8 +79,62 @@ function save() {
       <h2>就诊记录 · {{ ev.patientName }} · {{ ev.id }}</h2>
     </div>
 
+    <el-alert v-if="pending" type="success" :closable="false" show-icon class="prefill-hint">
+      <template #title>
+        已从「蛇伤判定（规则表单）」带入：{{ pending.snakeName }} · {{ pending.serum }} · {{ pending.dose }}（置信度 {{ pending.confidence }}%）
+      </template>
+    </el-alert>
+
     <el-row :gutter="16">
       <el-col :span="11">
+        <el-card v-if="ev.report" shadow="never" class="report-card">
+          <template #header>
+            <span class="bt">患者现场上报</span>
+            <el-tag size="small" effect="plain">来自患者端</el-tag>
+          </template>
+          <el-descriptions :column="1" border size="small">
+            <el-descriptions-item label="当前症状">{{ ev.report.symptoms }}</el-descriptions-item>
+            <el-descriptions-item label="自救措施">{{ ev.report.selfRescue || '—' }}</el-descriptions-item>
+            <el-descriptions-item label="咬伤时间">{{ ev.report.bittenTime || '—' }}</el-descriptions-item>
+            <el-descriptions-item label="蛇的描述">{{ ev.report.snakeDescription || '—' }}</el-descriptions-item>
+          </el-descriptions>
+          <div v-if="ev.report.hasPhoto" class="report-photos">
+            <svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg" class="report-photo">
+              <rect width="240" height="180" fill="#4a7c3f" rx="6"/>
+              <rect y="120" width="240" height="60" fill="#3d6b34"/>
+              <path d="M30,100 Q60,60 100,85 T170,70 T210,90" stroke="#8B7D3C" stroke-width="10" fill="none" stroke-linecap="round"/>
+              <path d="M30,100 Q60,60 100,85 T170,70 T210,90" stroke="#A0904A" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="8,6"/>
+              <ellipse cx="210" cy="90" rx="14" ry="10" fill="#8B7D3C" transform="rotate(-15,210,90)"/>
+              <circle cx="216" cy="86" r="2.5" fill="#222"/>
+              <line x1="224" y1="88" x2="230" y2="84" stroke="#c44" stroke-width="1.2"/>
+              <line x1="224" y1="88" x2="230" y2="90" stroke="#c44" stroke-width="1.2"/>
+              <rect x="8" y="158" width="100" height="16" rx="3" fill="rgba(0,0,0,0.5)"/>
+              <text x="14" y="170" font-size="10" fill="#fff" font-family="monospace">13:50:23</text>
+              <rect x="140" y="8" width="92" height="18" rx="3" fill="rgba(230,162,60,0.85)"/>
+              <text x="148" y="21" font-size="10" fill="#fff">患者上传 · 蛇</text>
+            </svg>
+            <svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg" class="report-photo">
+              <rect width="240" height="180" fill="#D4A574" rx="6"/>
+              <ellipse cx="120" cy="90" rx="70" ry="55" fill="#D4A574"/>
+              <ellipse cx="115" cy="88" rx="30" ry="22" fill="#c0392b" opacity="0.3"/>
+              <ellipse cx="115" cy="88" rx="22" ry="16" fill="#e74c3c" opacity="0.25"/>
+              <ellipse cx="108" cy="82" rx="3" ry="5" fill="#8B0000" transform="rotate(-10,108,82)"/>
+              <ellipse cx="122" cy="82" rx="3" ry="5" fill="#8B0000" transform="rotate(10,122,82)"/>
+              <circle cx="108" cy="88" r="2" fill="#6B0000" opacity="0.7"/>
+              <circle cx="122" cy="88" r="2" fill="#6B0000" opacity="0.7"/>
+              <rect x="8" y="158" width="100" height="16" rx="3" fill="rgba(0,0,0,0.5)"/>
+              <text x="14" y="170" font-size="10" fill="#fff" font-family="monospace">13:51:07</text>
+              <rect x="140" y="8" width="92" height="18" rx="3" fill="rgba(230,162,60,0.85)"/>
+              <text x="148" y="21" font-size="10" fill="#fff">患者上传 · 伤口</text>
+            </svg>
+          </div>
+          <div class="report-media">
+            <span class="media-label">附件：</span>
+            <el-tag v-if="ev.report.hasPhoto" size="small" type="success" effect="plain">蛇/伤口照片 ×2</el-tag>
+            <el-tag v-if="ev.report.voiceSeconds" size="small" effect="plain">语音 {{ ev.report.voiceSeconds }}s</el-tag>
+          </div>
+        </el-card>
+
         <AlgoPlaceholder kind="agent" title="Agent 初诊建议">
           <div class="agent">
             <div class="agent-row"><span>建议蛇种</span><b>{{ agentSuggestion.snakeName }}</b><el-tag size="small" type="warning">置信度 {{ agentSuggestion.confidence }}%</el-tag></div>
@@ -131,6 +188,13 @@ function save() {
 .empty { padding-top: 60px; }
 .page-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
 .page-head h2 { margin: 0; font-size: 18px; }
+.prefill-hint { margin-bottom: 16px; }
+.report-card { margin-bottom: 16px; }
+.report-card :deep(.el-card__header) { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; }
+.report-photos { display: flex; gap: 10px; margin-top: 10px; }
+.report-photo { width: 160px; border-radius: 6px; border: 1px solid #ebeef5; }
+.report-media { margin-top: 10px; display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.media-label { color: #909399; }
 .bt { font-weight: 600; }
 
 .agent { display: flex; flex-direction: column; gap: 8px; }

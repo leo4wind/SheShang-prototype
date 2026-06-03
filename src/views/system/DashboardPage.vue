@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import BaseChart from '@/components/BaseChart.vue'
 import {
   flowNodes, flowLinks, realtimeMetrics,
-  throughputHours, throughputHot, throughputCold, channelHealth
+  throughputHours, throughputTotal, channelHealth
 } from '@/mock/dashboard'
 import type { EChartsOption } from 'echarts'
 
@@ -32,13 +32,12 @@ const sankeyOption = computed<EChartsOption>(() => ({
 const throughputOption = computed<EChartsOption>(() => ({
   backgroundColor: 'transparent',
   tooltip: { trigger: 'axis' },
-  legend: { data: ['热通道', '冷通道'], textStyle: { color: '#9db4d8' }, top: 0 },
+  legend: { data: ['同步通道'], textStyle: { color: '#9db4d8' }, top: 0 },
   grid: { left: 44, right: 16, top: 30, bottom: 24 },
   xAxis: { type: 'category', data: throughputHours, axisLabel: { color: '#9db4d8' }, axisLine: { lineStyle: { color: '#2c4a7a' } } },
   yAxis: { type: 'value', axisLabel: { color: '#9db4d8' }, splitLine: { lineStyle: { color: '#13294d' } } },
   series: [
-    { name: '热通道', type: 'line', smooth: true, data: throughputHot, itemStyle: { color: '#ff7c7c' } },
-    { name: '冷通道', type: 'line', smooth: true, data: throughputCold, itemStyle: { color: '#5b8ff9' }, areaStyle: { opacity: 0.12 } }
+    { name: '同步通道', type: 'line', smooth: true, data: throughputTotal, itemStyle: { color: '#5b8ff9' }, areaStyle: { opacity: 0.15 } }
   ]
 }))
 </script>
@@ -59,7 +58,7 @@ const throughputOption = computed<EChartsOption>(() => ({
     </div>
 
     <div class="panel flow-panel">
-      <div class="p-title">数据流转（源 → 边界网关 → 冷热通道 → 存储 → 消费）</div>
+      <div class="p-title">数据流转（源 → 边界网关 → 同步通道 → 专病库 → 消费）<span class="boundary-tag">内外网隔离</span></div>
       <BaseChart :option="sankeyOption" height="340px" />
     </div>
 
@@ -74,7 +73,7 @@ const throughputOption = computed<EChartsOption>(() => ({
           <div class="ch" v-for="c in channelHealth" :key="c.name">
             <div class="ch-top">
               <span class="ch-name">{{ c.name }}</span>
-              <span class="ch-status">{{ c.status }}</span>
+              <span class="ch-status" :class="{ warn: c.status === '告警' }">{{ c.status }}</span>
             </div>
             <div class="ch-desc">{{ c.desc }}</div>
             <div class="ch-lat">延迟 {{ c.latency }}</div>
@@ -101,6 +100,16 @@ const throughputOption = computed<EChartsOption>(() => ({
 
 .panel { background: rgba(16,35,70,0.6); border: 1px solid #1f3a66; border-radius: 8px; padding: 14px; margin-bottom: 16px; }
 .p-title { font-size: 14px; font-weight: 600; color: #cbd9f5; margin-bottom: 8px; }
+.boundary-tag {
+  font-size: 11px;
+  font-weight: 400;
+  color: #f6bd16;
+  background: rgba(246, 189, 22, 0.15);
+  border: 1px solid rgba(246, 189, 22, 0.3);
+  border-radius: 4px;
+  padding: 1px 6px;
+  margin-left: 8px;
+}
 .bottom { display: grid; grid-template-columns: 3fr 2fr; gap: 16px; }
 .bottom .panel { margin-bottom: 0; }
 .ch-list { display: flex; flex-direction: column; gap: 10px; }
@@ -108,6 +117,7 @@ const throughputOption = computed<EChartsOption>(() => ({
 .ch-top { display: flex; justify-content: space-between; }
 .ch-name { font-weight: 600; }
 .ch-status { color: #5ad8a6; font-size: 12px; }
+.ch-status.warn { color: #f6bd16; }
 .ch-desc { font-size: 12px; color: #9db4d8; margin: 4px 0; }
 .ch-lat { font-size: 12px; color: #cbd9f5; }
 </style>

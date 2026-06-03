@@ -10,12 +10,12 @@ const router = useRouter()
 const rescue = useRescueStore()
 
 const form = reactive<FieldReport>({
-  symptoms: '',
-  selfRescue: '',
-  bittenTime: '',
-  snakeDescription: '',
-  hasPhoto: false,
-  voiceSeconds: 0
+  symptoms: '右小腿剧痛、肿胀，伤口两个牙印渗血',
+  selfRescue: '已用鞋带在膝盖下方绷扎',
+  bittenTime: '13:50 左右',
+  snakeDescription: '土黄色，三角头，约 1 米',
+  hasPhoto: true,
+  voiceSeconds: 12
 })
 
 const recording = ref(false)
@@ -87,18 +87,66 @@ function submit() {
         </el-form-item>
 
         <el-form-item label="现场照片">
-          <div class="uploads">
-            <div class="upload-box" @click="fakeUpload('蛇')">
-              <el-icon :size="24"><Camera /></el-icon>
-              <span>拍蛇</span>
+          <div class="photo-grid">
+            <div class="photo-card">
+              <svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg" class="photo-svg">
+                <!-- 草地背景 -->
+                <rect width="240" height="180" fill="#4a7c3f" rx="6"/>
+                <rect y="120" width="240" height="60" fill="#3d6b34" rx="0"/>
+                <ellipse cx="60" cy="130" rx="50" ry="8" fill="#5a8c4a" opacity="0.5"/>
+                <ellipse cx="180" cy="140" rx="40" ry="6" fill="#5a8c4a" opacity="0.4"/>
+                <!-- 蛇身 -->
+                <path d="M30,100 Q60,60 100,85 T170,70 T210,90" stroke="#8B7D3C" stroke-width="10" fill="none" stroke-linecap="round"/>
+                <path d="M30,100 Q60,60 100,85 T170,70 T210,90" stroke="#A0904A" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="8,6"/>
+                <!-- 蛇头 -->
+                <ellipse cx="210" cy="90" rx="14" ry="10" fill="#8B7D3C" transform="rotate(-15,210,90)"/>
+                <ellipse cx="210" cy="90" rx="10" ry="7" fill="#A0904A" transform="rotate(-15,210,90)"/>
+                <!-- 蛇眼 -->
+                <circle cx="216" cy="86" r="2.5" fill="#222"/>
+                <circle cx="217" cy="85.5" r="1" fill="#fff"/>
+                <!-- 蛇信 -->
+                <line x1="224" y1="88" x2="230" y2="84" stroke="#c44" stroke-width="1.2"/>
+                <line x1="224" y1="88" x2="230" y2="90" stroke="#c44" stroke-width="1.2"/>
+                <!-- 三角头标记 -->
+                <path d="M200,80 L220,80 L210,75 Z" fill="#8B7D3C" opacity="0.6"/>
+                <!-- 时间戳 -->
+                <rect x="8" y="158" width="100" height="16" rx="3" fill="rgba(0,0,0,0.5)"/>
+                <text x="14" y="170" font-size="10" fill="#fff" font-family="monospace">13:50:23</text>
+                <!-- Mock 标记 -->
+                <rect x="160" y="8" width="72" height="18" rx="3" fill="rgba(230,162,60,0.85)"/>
+                <text x="170" y="21" font-size="10" fill="#fff" font-family="sans-serif">Mock 照片</text>
+              </svg>
+              <div class="photo-label">蛇 · 土黄色三角头</div>
             </div>
-            <div class="upload-box" @click="fakeUpload('伤口')">
-              <el-icon :size="24"><Camera /></el-icon>
-              <span>拍伤口</span>
-            </div>
-            <div v-if="form.hasPhoto" class="upload-box done">
-              <el-icon :size="24"><PictureFilled /></el-icon>
-              <span>已添加</span>
+            <div class="photo-card">
+              <svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg" class="photo-svg">
+                <!-- 皮肤背景 -->
+                <rect width="240" height="180" fill="#D4A574" rx="6"/>
+                <ellipse cx="120" cy="90" rx="90" ry="70" fill="#C89660"/>
+                <!-- 腿部轮廓 -->
+                <ellipse cx="120" cy="90" rx="70" ry="55" fill="#D4A574"/>
+                <!-- 伤口肿胀区域 -->
+                <ellipse cx="115" cy="88" rx="30" ry="22" fill="#c0392b" opacity="0.3"/>
+                <ellipse cx="115" cy="88" rx="22" ry="16" fill="#e74c3c" opacity="0.25"/>
+                <!-- 两个牙印 -->
+                <ellipse cx="108" cy="82" rx="3" ry="5" fill="#8B0000" transform="rotate(-10,108,82)"/>
+                <ellipse cx="122" cy="82" rx="3" ry="5" fill="#8B0000" transform="rotate(10,122,82)"/>
+                <!-- 牙印渗血 -->
+                <circle cx="108" cy="88" r="2" fill="#6B0000" opacity="0.7"/>
+                <circle cx="122" cy="88" r="2" fill="#6B0000" opacity="0.7"/>
+                <!-- 肿胀纹理 -->
+                <ellipse cx="115" cy="95" rx="25" ry="8" fill="#d4534a" opacity="0.2"/>
+                <!-- 绷扎痕迹 -->
+                <line x1="80" y1="60" x2="150" y2="60" stroke="#8B6914" stroke-width="3" opacity="0.4"/>
+                <line x1="78" y1="115" x2="152" y2="115" stroke="#8B6914" stroke-width="3" opacity="0.4"/>
+                <!-- 时间戳 -->
+                <rect x="8" y="158" width="100" height="16" rx="3" fill="rgba(0,0,0,0.5)"/>
+                <text x="14" y="170" font-size="10" fill="#fff" font-family="monospace">13:51:07</text>
+                <!-- Mock 标记 -->
+                <rect x="160" y="8" width="72" height="18" rx="3" fill="rgba(230,162,60,0.85)"/>
+                <text x="170" y="21" font-size="10" fill="#fff" font-family="sans-serif">Mock 照片</text>
+              </svg>
+              <div class="photo-label">伤口 · 右小腿两个牙印</div>
             </div>
           </div>
           <div class="upload-hint">蛇逃跑可跳过照片，用上方文字描述</div>
@@ -131,22 +179,25 @@ function submit() {
 .form :deep(.el-form-item__label) { font-size: 13px; padding-bottom: 2px; }
 .voice-btn { margin-top: 8px; }
 
-.uploads { display: flex; gap: 10px; }
-.upload-box {
-  width: 64px;
-  height: 64px;
-  border: 1px dashed #c0c4cc;
+.photo-grid { display: flex; gap: 10px; }
+.photo-card {
+  flex: 1;
+  border: 1px solid #ebeef5;
   border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  font-size: 12px;
-  color: #909399;
-  cursor: pointer;
+  overflow: hidden;
+  background: #000;
 }
-.upload-box.done { border-color: #67c23a; color: #67c23a; border-style: solid; }
+.photo-svg {
+  width: 100%;
+  display: block;
+}
+.photo-label {
+  font-size: 12px;
+  color: #606266;
+  padding: 6px 8px;
+  background: #fff;
+  text-align: center;
+}
 .upload-hint { font-size: 12px; color: #c0c4cc; margin-top: 6px; }
 
 .submit { width: 100%; }

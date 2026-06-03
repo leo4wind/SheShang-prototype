@@ -51,6 +51,18 @@ export interface VisitRecord {
   recordedAt: string
 }
 
+// 蛇伤规则判定结果（V1 由 DiagnosisRulePage 产生，VisitRecordPage 读取预填）
+export interface DiagnosisResult {
+  snakeId: string
+  snakeName: string
+  dangerLevel: number
+  confidence: number
+  serum: string
+  dose: string
+  matchedRules: string[]
+  diagnosedAt: string
+}
+
 export interface RescueEvent {
   id: string
   patientId: string
@@ -62,6 +74,7 @@ export interface RescueEvent {
   report?: FieldReport
   pushedGuides: PushedGuide[]
   assignedDoctor?: string
+  pendingDiagnosis?: DiagnosisResult  // 规则判定结果（待确认写入就诊记录）
   visitRecord?: VisitRecord
   // 标记是否为"当前演示患者"正在进行的事件（患者端操作的对象）
   isCurrent?: boolean
@@ -211,6 +224,12 @@ export const useRescueStore = defineStore('rescue', () => {
     advance(id, 'arrived')
   }
 
+  function saveDiagnosis(id: string, diagnosis: DiagnosisResult) {
+    const ev = getEvent(id)
+    if (!ev) return
+    ev.pendingDiagnosis = diagnosis
+  }
+
   function saveVisitRecord(id: string, record: VisitRecord) {
     const ev = getEvent(id)
     if (!ev) return
@@ -235,6 +254,7 @@ export const useRescueStore = defineStore('rescue', () => {
     acceptByDoctor,
     pushGuide,
     markArrived,
+    saveDiagnosis,
     saveVisitRecord,
     discharge
   }

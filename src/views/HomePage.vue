@@ -21,50 +21,43 @@ interface JourneyCard {
   highlights: string[]
 }
 
-const journeys: JourneyCard[] = [
+interface VersionLayer {
+  key: string
+  title: string
+  subtitle: string
+  color: string
+  entry: string
+  entryTitle: string
+  highlights: string[]
+}
+
+const versionLayers: VersionLayer[] = [
   {
-    id: 'J1',
-    title: '主线 1 · 蛇伤急救',
-    subtitle: '患者求救 → 接诊医生远程救助 → 入院判定 → 就诊记录',
-    color: '#f56c6c',
-    emoji: 'SOS',
-    role: '蛇伤患者 + 接诊医生',
+    key: 'v1',
+    title: 'V1 · 急救接诊闭环',
+    subtitle: '患者 SOS → 医生接诊 → 蛇伤判定(规则) → 就诊记录 → 患者查看',
+    color: '#67c23a',
     entry: '/patient/sos',
     entryTitle: '从「求救首页」开始',
-    highlights: ['患者小程序', '医生 PC', '跨终端最多', '最有戏剧张力']
+    highlights: ['患者小程序', '医生 PC', '可演示完整故事']
   },
   {
-    id: 'J2',
-    title: '主线 2 · 数据治理',
-    subtitle: '多源接入 → 落库 → 脱敏 → 清洗 → 映射 → 质控 → 入专病库',
-    color: '#67c23a',
-    emoji: 'DB',
-    role: '数据管理员',
-    entry: '/intranet/ingest',
-    entryTitle: '从「数据接入监控」开始',
-    highlights: ['内网 PC', '冷热双通道', '其它 3 条主线的底座']
-  },
-  {
-    id: 'J3',
-    title: '主线 3 · 医生工作站',
-    subtitle: '蛇伤判定 → 转诊 → MDT 会诊 → 共享患者 → 权限 → 培训',
-    color: '#409eff',
-    emoji: 'MD',
-    role: '接诊医生 + 多中心专家',
-    entry: '/doctor/referral/new',
-    entryTitle: '从「转诊申请」开始',
-    highlights: ['医生 PC + APP', '跨院协作', '权限管理']
-  },
-  {
-    id: 'J4',
-    title: '主线 4 · 患者陪护',
-    subtitle: '随访计划 → 复查 → 用药打卡 → 对话 → 问卷 → 医患互动',
+    key: 'v2',
+    title: 'V2 · 多中心协同 + 持续服务',
+    subtitle: '转诊/MDT/共享 → 患者360 → 随访闭环 → 医患消息 → 培训',
     color: '#e6a23c',
-    emoji: '随',
-    role: '蛇伤患者（出院后）',
-    entry: '/patient/care/timeline',
-    entryTitle: '从「我的随访计划」开始',
-    highlights: ['患者小程序', '长周期', '推送频次控制']
+    entry: '/doctor/referral/new',
+    entryTitle: '从「转诊申请」开始（V2）',
+    highlights: ['医生APP', '跨院协作', '随访运营']
+  },
+  {
+    key: 'v3',
+    title: 'V3 · 数据治理 + 科研 + 智能化',
+    subtitle: '完整治理 → 质控闭环 → 科研CRF → AI图像识别 → 数据大屏',
+    color: '#909399',
+    entry: '/intranet/qc',
+    entryTitle: '从「质控工作台」开始（V3）',
+    highlights: ['内网PC', '数据治理', '科研沉淀']
   }
 ]
 
@@ -79,12 +72,8 @@ interface SysCard {
 const systemCards: SysCard[] = [
   { id: 'P402', title: '角色与权限', desc: '维护演示角色、菜单权限、数据权限', route: '/system/permissions', priority: 'v1' },
   { id: 'P403', title: '医院与资质', desc: '维护医院、资质、血清库存接入', route: '/system/hospitals', priority: 'v1' },
-  { id: 'P401', title: '数据流转大屏（v3）', desc: '数据从源到专病库的实时流量呈现 · 单页展示无钻取', route: '/system/dashboard', priority: 'v3' }
+  { id: 'P401', title: '数据流转大屏（v3）', desc: '单通道数据流转展示 · 内外网边界标注', route: '/system/dashboard', priority: 'v3' }
 ]
-
-function goJourney(card: JourneyCard) {
-  router.push(card.entry)
-}
 
 function goSys(card: SysCard) {
   if (card.priority === 'v3') {
@@ -100,10 +89,10 @@ function goSys(card: SysCard) {
       <div>
         <h1>人民蛇伤模块 · 原型</h1>
         <p class="subtitle">
-          覆盖 4 条主线 · 3 类终端 · 7 类角色 · v1 阶段共 {{ v1Count }} 个页面
+          三层递进 · V1 急救闭环 → V2 协同随访 → V3 治理科研 · v1 阶段共 {{ v1Count }} 个页面
         </p>
         <p class="hint">
-          左侧菜单按"终端"组织，每条主线的页面散落在不同终端。点击下方卡片可以快速跳到主线起点开始演示。
+          左侧菜单按"终端"组织。点击下方卡片可快速跳到各版本起点开始演示。PRD 1.1 为唯一 source of truth。
         </p>
       </div>
       <div class="hero-controls">
@@ -119,23 +108,20 @@ function goSys(card: SysCard) {
     </section>
 
     <section>
-      <h2 class="section-title">4 条主线</h2>
+      <h2 class="section-title">三层故事（V1 / V2 / V3）</h2>
       <el-row :gutter="16">
-        <el-col v-for="card in journeys" :key="card.id" :xs="24" :md="12">
-          <el-card class="journey-card" shadow="hover" @click="goJourney(card)">
+        <el-col v-for="layer in versionLayers" :key="layer.key" :xs="24" :md="8">
+          <el-card class="journey-card" shadow="hover" @click="router.push(layer.entry)">
             <div class="card-head">
-              <div class="emoji" :style="{ background: card.color }">{{ card.emoji }}</div>
-              <div>
-                <div class="card-title">{{ card.title }}</div>
-                <div class="card-role">主导：{{ card.role }}</div>
-              </div>
+              <span class="version-badge" :style="{ background: layer.color }">{{ layer.key }}</span>
+              <div class="card-title">{{ layer.title }}</div>
             </div>
-            <p class="card-subtitle">{{ card.subtitle }}</p>
+            <p class="card-subtitle">{{ layer.subtitle }}</p>
             <div class="card-tags">
-              <el-tag v-for="h in card.highlights" :key="h" size="small" effect="plain">{{ h }}</el-tag>
+              <el-tag v-for="h in layer.highlights" :key="h" size="small" effect="plain">{{ h }}</el-tag>
             </div>
             <div class="card-foot">
-              <span class="entry">{{ card.entryTitle }}</span>
+              <span class="entry">{{ layer.entryTitle }}</span>
               <el-icon><ArrowRight /></el-icon>
             </div>
           </el-card>
@@ -170,17 +156,13 @@ function goSys(card: SysCard) {
     </section>
 
     <section class="docs">
-      <h2 class="section-title">配套文档（评审依据）</h2>
+      <h2 class="section-title">配套文档</h2>
       <ul>
-        <li><code>docs/roles.md</code> — 7 角色 × 4 终端</li>
-        <li><code>docs/journeys/journey-1-emergency.md</code> — 主线 1 蛇伤急救</li>
-        <li><code>docs/journeys/journey-2-data.md</code> — 主线 2 数据治理（评审已合并 v2 反馈）</li>
-        <li><code>docs/journeys/journey-3-doctor.md</code> — 主线 3 医生工作站</li>
-        <li><code>docs/journeys/journey-4-care.md</code> — 主线 4 患者陪护（含推送约束）</li>
-        <li><code>docs/data-flow.md</code> — 数据流贯穿图（含冷热双通道、网络边界、D2 消费修正）</li>
-        <li><code>docs/information-architecture.md</code> — 信息架构与路由表</li>
-        <li><code>docs/page-inventory.md</code> — 54 个页面清单</li>
+        <li><code>docs/蛇伤专病PRD-v1.1.md</code> — <strong>唯一 source of truth</strong>（含流程图 / 数据流 / 模块清单 / 版本说明 / 用户故事）</li>
+        <li><code>plan/PRD-1.1-指导文档.md</code> — PRD 1.1 指导文档（含 15 条取舍决策 + 原型改造清单）</li>
+        <li><code>plan/蛇伤专病原型与文档重构计划.md</code> — 原型与文档重构计划</li>
       </ul>
+      <p class="docs-note">旧文档（data-flow.md、page-inventory.md、information-architecture.md、roles.md、journeys/*）已归档至 <code>docs/_archive/</code></p>
     </section>
   </div>
 </template>
@@ -251,30 +233,26 @@ function goSys(card: SysCard) {
 .card-head {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   margin-bottom: 8px;
 }
 
-.emoji {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  color: #fff;
-  font-weight: 600;
-  display: flex;
+.version-badge {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  min-width: 32px;
+  height: 22px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 999px;
+  text-transform: uppercase;
 }
 
 .card-title {
   font-size: 16px;
   font-weight: 600;
-}
-
-.card-role {
-  font-size: 12px;
-  color: var(--color-text-secondary);
 }
 
 .card-subtitle {
@@ -364,5 +342,11 @@ function goSys(card: SysCard) {
 
 .docs li {
   margin: 6px 0;
+}
+
+.docs-note {
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: #c0c4cc;
 }
 </style>
