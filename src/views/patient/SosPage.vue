@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import PhoneNavBar from '@/components/PhoneNavBar.vue'
@@ -11,6 +11,18 @@ const rescue = useRescueStore()
 
 const locating = ref(false)
 const location = ref('青龙山林场北坡（自动定位）')
+
+const profileInitial = computed(() => rescue.isPatientLoggedIn ? currentPatient.name.charAt(0) : '急')
+const profileTitle = computed(() =>
+  rescue.isPatientLoggedIn
+    ? `${currentPatient.name} · ${currentPatient.gender} · ${currentPatient.age}岁`
+    : '游客急救模式'
+)
+const profileSub = computed(() =>
+  rescue.isPatientLoggedIn
+    ? `紧急联系人：${currentPatient.emergencyContact}`
+    : '可先求救上报，到院核验或登录后保存记录'
+)
 
 function triggerSos() {
   locating.value = true
@@ -27,6 +39,16 @@ function triggerSos() {
 function callEmergency() {
   router.push('/patient/fallback')
 }
+
+function toggleIdentity() {
+  if (rescue.isPatientLoggedIn) {
+    rescue.logoutPatient()
+    ElMessage.info('已切换为未登录游客急救模式')
+  } else {
+    rescue.loginPatient()
+    ElMessage.success(rescue.currentEvent ? '已登录，并关联当前求救事件' : '已切换为已登录患者')
+  }
+}
 </script>
 
 <template>
@@ -35,12 +57,22 @@ function callEmergency() {
 
     <div class="body">
       <div class="patient-strip">
-        <el-avatar :size="36" style="background: #f56c6c">{{ currentPatient.name.charAt(0) }}</el-avatar>
-        <div>
-          <div class="name">{{ currentPatient.name }} · {{ currentPatient.gender }} · {{ currentPatient.age }}岁</div>
-          <div class="sub">紧急联系人：{{ currentPatient.emergencyContact }}</div>
+        <el-avatar :size="36" style="background: #f56c6c">{{ profileInitial }}</el-avatar>
+        <div class="profile-text">
+          <div class="name">{{ profileTitle }}</div>
+          <div class="sub">{{ profileSub }}</div>
         </div>
+        <el-button link type="primary" size="small" @click="toggleIdentity">
+          {{ rescue.isPatientLoggedIn ? '切换游客急救' : '登录并绑定' }}
+        </el-button>
       </div>
+
+      <el-alert
+        type="info"
+        :closable="false"
+        show-icon
+        title="紧急求救无需登录，登录后可保存本次就诊记录。"
+      />
 
       <div class="sos-area">
         <div class="sos-ring" :class="{ pulsing: locating }" @click="triggerSos">
@@ -107,6 +139,7 @@ function callEmergency() {
   border-radius: 10px;
   padding: 10px 12px;
 }
+.profile-text { flex: 1; min-width: 0; }
 .patient-strip .name { font-size: 14px; font-weight: 600; }
 .patient-strip .sub { font-size: 12px; color: #909399; margin-top: 2px; }
 

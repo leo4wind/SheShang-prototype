@@ -21,6 +21,10 @@ function lock() {
     ElMessage.success('已锁定，该条数据通过质控入库')
   }
 }
+
+function viewOriginal() {
+  ElMessage.info('原文/复核依据预览为 V3 占位：后续打开 D2 原始病历、检验单或导入原文')
+}
 </script>
 
 <template>
@@ -45,6 +49,14 @@ function lock() {
             <div class="s-label"><el-icon color="#f56c6c"><WarningFilled /></el-icon> 质控质疑（{{ ticket.field }}）</div>
             <div class="s-body">{{ ticket.issue }}</div>
             <div class="s-meta">{{ ticket.raisedBy }} · {{ ticket.raisedAt }}</div>
+          </div>
+
+          <div class="evidence">
+            <div>
+              <div class="e-title">复核依据</div>
+              <div class="e-desc">查阅 D2 原文、导入记录和医生答疑，确认该字段是否可锁定入库。</div>
+            </div>
+            <el-button type="primary" plain @click="viewOriginal">查阅原文 / 复核依据</el-button>
           </div>
 
           <div v-if="ticket.answer" class="step answer">
@@ -90,6 +102,9 @@ function lock() {
 .s-label { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
 .s-body { font-size: 14px; color: #303133; line-height: 1.7; margin: 8px 0 4px; }
 .s-meta { font-size: 12px; color: #909399; }
+.evidence { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; margin: 8px 0 12px; border: 1px dashed #b3d8ff; border-radius: 8px; background: #ecf5ff; }
+.e-title { font-size: 14px; font-weight: 600; color: #303133; }
+.e-desc { margin-top: 4px; font-size: 12px; color: #606266; line-height: 1.5; }
 .waiting { color: #e6a23c; font-size: 13px; display: flex; align-items: center; gap: 6px; padding: 12px 0; border-top: 1px dashed #ebeef5; }
 .full { width: 100%; margin: 0 0 10px; }
 .hint { font-size: 12px; color: #909399; line-height: 1.6; }

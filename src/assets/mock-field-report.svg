@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="640" viewBox="0 0 960 640" role="img" aria-label="Mock field report photo">
+  <defs>
+    <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#e6f4ff"/>
+      <stop offset="1" stop-color="#f7fbf2"/>
+    </linearGradient>
+    <linearGradient id="ground" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#cfe7b7"/>
+      <stop offset="1" stop-color="#8dbb73"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#37522f" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <rect width="960" height="640" fill="url(#sky)"/>
+  <path d="M0 330 C160 280 260 330 420 296 C600 258 740 306 960 260 L960 640 L0 640 Z" fill="url(#ground)"/>
+  <path d="M76 510 C188 440 246 530 334 468 C414 412 482 472 558 432 C632 394 728 414 852 350" fill="none" stroke="#315f2b" stroke-width="34" stroke-linecap="round" filter="url(#shadow)"/>
+  <path d="M78 510 C190 438 246 528 334 466 C414 410 482 470 558 430 C632 392 728 412 852 348" fill="none" stroke="#5d8f39" stroke-width="22" stroke-linecap="round"/>
+  <path d="M806 332 C846 308 894 314 922 344 C888 364 844 364 806 332 Z" fill="#5d8f39"/>
+  <circle cx="884" cy="338" r="5" fill="#172d18"/>
+  <path d="M270 358 C252 392 226 418 206 454 C194 476 204 502 228 510 C260 520 296 496 312 468 C328 438 338 402 352 366 Z" fill="#d6a77d" filter="url(#shadow)"/>
+  <path d="M298 390 C286 418 282 442 292 468" fill="none" stroke="#9f6a4a" stroke-width="8" stroke-linecap="round" opacity="0.55"/>
+  <circle cx="302" cy="430" r="10" fill="#8a3c2f"/>
+  <circle cx="327" cy="424" r="9" fill="#8a3c2f"/>
+  <path d="M290 486 C324 502 356 502 386 486" fill="none" stroke="#6b8f55" stroke-width="10" stroke-linecap="round"/>
+  <rect x="36" y="38" width="282" height="74" rx="16" fill="#ffffff" opacity="0.86"/>
+  <circle cx="74" cy="75" r="17" fill="#f56c6c"/>
+  <path d="M72 62 L80 76 L68 76 Z" fill="#fff"/>
+  <text x="106" y="68" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#303133">Mock现场照片</text>
+  <text x="106" y="96" font-family="Arial, sans-serif" font-size="16" fill="#606266">蛇体线索 + 伤口位置</text>
+</svg>

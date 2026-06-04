@@ -26,7 +26,7 @@ function hospitalName(id?: string) {
     <div class="page-head">
       <div>
         <h2>救助工作台</h2>
-        <p class="sub">实时接收周边患者求救事件 · 点击进入患者实时视图</p>
+        <p class="sub">实时接收周边患者求救事件 · 已出院病例保留在列表中用于回看</p>
       </div>
       <MockDataLabel />
     </div>
@@ -35,14 +35,25 @@ function hospitalName(id?: string) {
       <el-col :span="6"><div class="stat danger"><div class="n">{{ rescue.activeEvents.length }}</div><div class="l">待处理事件</div></div></el-col>
       <el-col :span="6"><div class="stat warning"><div class="n">{{ rescue.activeEvents.filter(e => e.status === 'sos' || e.status === 'hospital').length }}</div><div class="l">新求救（未接诊）</div></div></el-col>
       <el-col :span="6"><div class="stat primary"><div class="n">{{ rescue.activeEvents.filter(e => e.status === 'accepted' || e.status === 'arrived').length }}</div><div class="l">救助中</div></div></el-col>
-      <el-col :span="6"><div class="stat success"><div class="n">{{ rescue.activeEvents.filter(e => e.status === 'treating').length }}</div><div class="l">治疗中</div></div></el-col>
+      <el-col :span="6"><div class="stat success"><div class="n">{{ rescue.workbenchEvents.filter(e => e.status === 'discharged').length }}</div><div class="l">已出院可回看</div></div></el-col>
     </el-row>
 
     <el-card shadow="never" class="list-card">
-      <template #header><span class="card-title">求救事件列表</span></template>
-      <el-table :data="rescue.activeEvents" style="width: 100%" @row-click="(row: any) => open(row.id)" class="clickable">
+      <template #header><span class="card-title">求救事件列表（含已出院）</span></template>
+      <el-table :data="rescue.workbenchEvents" style="width: 100%" @row-click="(row: any) => open(row.id)" class="clickable">
         <el-table-column prop="id" label="事件号" width="100" />
         <el-table-column prop="patientName" label="患者" width="90" />
+        <el-table-column label="身份" width="120">
+          <template #default="{ row }">
+            <el-tag
+              size="small"
+              :type="row.identityStatus === 'bound' ? 'success' : 'warning'"
+              effect="plain"
+            >
+              {{ row.identityStatus === 'bound' ? '已绑定' : '临时身份' }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column label="状态" width="110">
           <template #default="{ row }">
             <el-tag size="small" :type="statusTagType[row.status as RescueStatus] as any">
@@ -60,7 +71,7 @@ function hospitalName(id?: string) {
         </el-table-column>
         <el-table-column label="操作" width="100" fixed="right">
           <template #default="{ row }">
-            <el-button link type="primary" @click.stop="open(row.id)">查看</el-button>
+            <el-button link type="primary" @click.stop="open(row.id)">{{ row.status === 'discharged' ? '回看' : '查看' }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -71,7 +82,7 @@ function hospitalName(id?: string) {
       :closable="false"
       show-icon
       title="数据来源"
-      description="求救事件经「热通道」轻量清洗后实时进入工作台（见 docs/data-flow.md）。患者既往史从专病库 D1 调阅。"
+      description="求救事件由外网应用接口同步到医生 PC 工作台；C 端不直连内网，接口/隔离方案待技术确认。"
       class="src-hint"
     />
   </div>

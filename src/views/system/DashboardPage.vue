@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import BaseChart from '@/components/BaseChart.vue'
 import {
   flowNodes, flowLinks, realtimeMetrics,
-  throughputHours, throughputHot, throughputCold, channelHealth
+  throughputHours, throughputUnified, pipelineHealth
 } from '@/mock/dashboard'
 import type { EChartsOption } from 'echarts'
 
@@ -19,12 +19,12 @@ const sankeyOption = computed<EChartsOption>(() => ({
   tooltip: { trigger: 'item', triggerOn: 'mousemove' },
   series: [{
     type: 'sankey',
-    left: 8, right: 110, top: 10, bottom: 10,
-    nodeWidth: 14, nodeGap: 10,
+    left: 28, right: 190, top: 8, bottom: 20,
+    nodeWidth: 12, nodeGap: 12,
     data: flowNodes.map((n) => ({ name: n.name, itemStyle: { color: catColor[n.category], borderColor: 'transparent' } })),
     links: flowLinks.map((l) => ({ source: l.source, target: l.target, value: linkVal(l.target) })),
     lineStyle: { color: 'gradient', opacity: 0.35 },
-    label: { color: '#dbe7ff', fontSize: 11 },
+    label: { color: '#dbe7ff', fontSize: 11, width: 116, overflow: 'truncate' },
     emphasis: { focus: 'adjacency' }
   }]
 }))
@@ -32,13 +32,12 @@ const sankeyOption = computed<EChartsOption>(() => ({
 const throughputOption = computed<EChartsOption>(() => ({
   backgroundColor: 'transparent',
   tooltip: { trigger: 'axis' },
-  legend: { data: ['热通道', '冷通道'], textStyle: { color: '#9db4d8' }, top: 0 },
+  legend: { data: ['统一接入'], textStyle: { color: '#9db4d8' }, top: 0 },
   grid: { left: 44, right: 16, top: 30, bottom: 24 },
   xAxis: { type: 'category', data: throughputHours, axisLabel: { color: '#9db4d8' }, axisLine: { lineStyle: { color: '#2c4a7a' } } },
   yAxis: { type: 'value', axisLabel: { color: '#9db4d8' }, splitLine: { lineStyle: { color: '#13294d' } } },
   series: [
-    { name: '热通道', type: 'line', smooth: true, data: throughputHot, itemStyle: { color: '#ff7c7c' } },
-    { name: '冷通道', type: 'line', smooth: true, data: throughputCold, itemStyle: { color: '#5b8ff9' }, areaStyle: { opacity: 0.12 } }
+    { name: '统一接入', type: 'line', smooth: true, data: throughputUnified, itemStyle: { color: '#5b8ff9' }, areaStyle: { opacity: 0.14 } }
   ]
 }))
 </script>
@@ -47,8 +46,10 @@ const throughputOption = computed<EChartsOption>(() => ({
   <div class="dash">
     <div class="dash-head">
       <h2>蛇伤专病库 · 数据流转大屏</h2>
-      <span class="live"><i class="dot" /> 实时 · {{ new Date().toLocaleDateString('zh-CN') }}</span>
+      <span class="live"><i class="dot" /> 单通道同步 · {{ new Date().toLocaleDateString('zh-CN') }}</span>
     </div>
+
+    <div class="boundary">外网应用 ↔ 内网应用接口方案待技术确认 · C 端不直连内网</div>
 
     <div class="metrics">
       <div class="metric" v-for="m in realtimeMetrics" :key="m.label">
@@ -59,19 +60,19 @@ const throughputOption = computed<EChartsOption>(() => ({
     </div>
 
     <div class="panel flow-panel">
-      <div class="p-title">数据流转（源 → 边界网关 → 冷热通道 → 存储 → 消费）</div>
+      <div class="p-title">数据流转（源 → 内外网边界 → 统一接入 → 专病库 → 消费）</div>
       <BaseChart :option="sankeyOption" height="340px" />
     </div>
 
     <div class="bottom">
       <div class="panel">
-        <div class="p-title">24h 接入吞吐</div>
+        <div class="p-title">24h 统一接入吞吐</div>
         <BaseChart :option="throughputOption" height="220px" />
       </div>
       <div class="panel">
-        <div class="p-title">通道健康</div>
+        <div class="p-title">链路健康</div>
         <div class="ch-list">
-          <div class="ch" v-for="c in channelHealth" :key="c.name">
+          <div class="ch" v-for="c in pipelineHealth" :key="c.name">
             <div class="ch-top">
               <span class="ch-name">{{ c.name }}</span>
               <span class="ch-status">{{ c.status }}</span>
@@ -91,6 +92,7 @@ const throughputOption = computed<EChartsOption>(() => ({
 .dash-head h2 { margin: 0; font-size: 22px; letter-spacing: 2px; background: linear-gradient(90deg, #5b8ff9, #5ad8a6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .live { font-size: 13px; color: #9db4d8; display: flex; align-items: center; gap: 6px; }
 .live .dot { width: 8px; height: 8px; border-radius: 50%; background: #5ad8a6; display: inline-block; box-shadow: 0 0 8px #5ad8a6; }
+.boundary { border: 1px solid #2c4a7a; background: rgba(91,143,249,0.12); color: #cbd9f5; border-radius: 8px; padding: 10px 12px; margin-bottom: 16px; font-size: 13px; text-align: center; }
 
 .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
 .metric { background: linear-gradient(135deg, rgba(91,143,249,0.15), rgba(91,143,249,0.04)); border: 1px solid #1f3a66; border-radius: 8px; padding: 16px; }

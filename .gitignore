@@ -10,6 +10,9 @@ node_modules
 dist
 dist-ssr
 *.local
+.env
+.env.*
+!.env.example
 
 # Editor directories
 .vscode/*
@@ -27,6 +30,11 @@ dist-ssr
 
 # TypeScript incremental build cache
 *.tsbuildinfo
+
+# Local agent/tooling state
+.codegraph/
+.reasonix/
+reasonix.toml
 
 # OS
 Thumbs.db

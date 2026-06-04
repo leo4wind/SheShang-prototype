@@ -2,11 +2,15 @@
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import PhoneNavBar from '@/components/PhoneNavBar.vue'
+import { useRescueStore } from '@/stores/rescue'
 
 const router = useRouter()
+const rescue = useRescueStore()
 
 function login() {
-  ElMessage.success('登录成功（原型免密）')
+  const hadCurrentEvent = Boolean(rescue.currentEvent)
+  rescue.loginPatient()
+  ElMessage.success(hadCurrentEvent ? '登录成功，已关联当前求救事件' : '登录成功（原型免密）')
   router.push('/patient/home')
 }
 </script>
@@ -35,6 +39,13 @@ function login() {
 
       <el-button type="primary" size="large" class="login-btn" @click="login">登录 / 注册</el-button>
       <el-button link class="wx-login" @click="login">微信一键登录</el-button>
+
+      <el-alert
+        type="info"
+        :closable="false"
+        show-icon
+        title="登录后自动关联当前求救事件，已上报信息不会丢失。"
+      />
 
       <div class="agreement">登录即代表同意《用户协议》《隐私政策》</div>
     </div>

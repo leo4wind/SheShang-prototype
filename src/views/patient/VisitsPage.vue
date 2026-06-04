@@ -15,6 +15,7 @@ const myVisits = computed(() =>
     .slice()
     .reverse()
 )
+const currentEvent = computed(() => rescue.currentEvent)
 
 const statusTagType: Record<RescueStatus, string> = {
   sos: 'danger',
@@ -40,23 +41,60 @@ function hospitalName(id?: string) {
     <PhoneNavBar title="我的就诊" back="/patient/home" />
 
     <div class="body">
-      <el-empty v-if="!myVisits.length" description="暂无就诊记录" />
+      <template v-if="!rescue.isPatientLoggedIn">
+        <div class="login-card">
+          <el-alert
+            type="warning"
+            :closable="false"
+            show-icon
+            title="登录后可查看和保存历史就诊记录；当前急救事件仍可在等待页继续查看。"
+          />
+          <div class="login-actions">
+            <el-button type="primary" @click="router.push('/patient/login')">登录 / 注册</el-button>
+            <el-button
+              v-if="currentEvent"
+              @click="router.push(`/patient/waiting/${currentEvent.id}`)"
+            >
+              继续当前求救
+            </el-button>
+          </div>
+        </div>
 
-      <div v-for="v in myVisits" :key="v.id" class="visit-card" @click="open(v.id)">
-        <div class="row1">
-          <span class="vid">{{ v.id }}</span>
-          <el-tag size="small" :type="statusTagType[v.status] as any">{{ STATUS_LABEL[v.status] }}</el-tag>
+        <div v-if="currentEvent" class="current-card" @click="open(currentEvent.id)">
+          <div class="row1">
+            <span class="vid">{{ currentEvent.id }}</span>
+            <el-tag size="small" :type="statusTagType[currentEvent.status] as any">{{ STATUS_LABEL[currentEvent.status] }}</el-tag>
+          </div>
+          <div class="row2">
+            <el-icon><Clock /></el-icon> {{ currentEvent.createdAt }}
+            <el-icon style="margin-left:10px"><LocationFilled /></el-icon> {{ currentEvent.location }}
+          </div>
+          <div class="row3">临时求救身份 · 登录后保存到我的就诊</div>
         </div>
-        <div class="row2">
-          <el-icon><Clock /></el-icon> {{ v.createdAt }}
-          <el-icon style="margin-left:10px"><LocationFilled /></el-icon> {{ v.location }}
+      </template>
+
+      <template v-else>
+        <el-empty v-if="!myVisits.length" description="暂无就诊记录" />
+
+        <div v-for="v in myVisits" :key="v.id" class="visit-card" @click="open(v.id)">
+          <div class="row1">
+            <span class="vid">{{ v.id }}</span>
+            <el-tag size="small" :type="statusTagType[v.status] as any">{{ STATUS_LABEL[v.status] }}</el-tag>
+          </div>
+          <div class="row2">
+            <el-icon><Clock /></el-icon> {{ v.createdAt }}
+            <el-icon style="margin-left:10px"><LocationFilled /></el-icon> {{ v.location }}
+          </div>
+          <div class="row3">目标医院：{{ hospitalName(v.selectedHospitalId) }}</div>
+          <div v-if="v.visitRecord" class="row4">
+            诊断：{{ v.visitRecord.snakeJudgment }} · 血清：{{ v.visitRecord.serumName }}
+          </div>
+          <div v-if="v.visitRecord" class="row5">
+            已补录：诊断说明 / 用药 / 检验 / 影像
+          </div>
+          <el-icon class="arrow"><ArrowRight /></el-icon>
         </div>
-        <div class="row3">目标医院：{{ hospitalName(v.selectedHospitalId) }}</div>
-        <div v-if="v.visitRecord" class="row4">
-          诊断：{{ v.visitRecord.snakeJudgment }} · 血清：{{ v.visitRecord.serumName }}
-        </div>
-        <el-icon class="arrow"><ArrowRight /></el-icon>
-      </div>
+      </template>
     </div>
   </div>
 </template>
@@ -65,17 +103,29 @@ function hospitalName(id?: string) {
 .visits-page { min-height: 100%; background: #f0f2f5; }
 .body { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
 
-.visit-card {
+.visit-card, .current-card {
   background: #fff;
   border-radius: 10px;
   padding: 14px;
   position: relative;
   cursor: pointer;
 }
+.login-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 12px;
+}
+.login-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.login-actions .el-button { flex: 1; margin-left: 0; }
 .row1 { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
 .vid { font-weight: 700; font-size: 15px; }
 .row2 { font-size: 12px; color: #909399; display: flex; align-items: center; gap: 2px; }
 .row3 { font-size: 13px; color: #606266; margin-top: 6px; }
 .row4 { font-size: 13px; color: #67c23a; margin-top: 4px; }
+.row5 { font-size: 12px; color: #909399; margin-top: 3px; }
 .arrow { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #c0c4cc; }
 </style>
