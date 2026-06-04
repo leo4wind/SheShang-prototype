@@ -42,3 +42,8 @@ Thumbs.db
 reasonix.toml
 .codegraph/daemon.pid
 .codegraph/.gitignore
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
