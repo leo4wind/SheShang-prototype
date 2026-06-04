@@ -116,7 +116,7 @@ function confirm() {
     <div class="page-head">
       <div>
         <h2>蛇伤判定（规则表单）</h2>
-        <p class="sub">{{ ev ? `${ev.patientName} · ${ev.id}` : '请从救助工作台进入具体患者' }} · V1 由医生按规则表单人工确认</p>
+        <p class="sub">{{ ev ? `${ev.patientName} · ${ev.id}` : '请从救助工作台进入具体患者' }} · V3 用于规则判定复盘与智能化增强</p>
       </div>
       <MockDataLabel />
     </div>
@@ -176,8 +176,8 @@ function confirm() {
             :closable="false"
             show-icon
             class="v2-note"
-            title="V2 AI 辅助占位"
-            description="后续可接入图像识别和辅助建议，但页面明确仅辅助不诊断，医生保留最终确认权。"
+            title="V3 AI 辅助占位"
+            description="后续可接入图像识别、历史复盘和辅助建议，但页面明确仅辅助不诊断，医生保留最终确认权。"
           />
         </el-card>
       </el-col>
@@ -211,7 +211,7 @@ function confirm() {
             </el-form-item>
             <el-button type="primary" class="full" @click="confirm">确认判定并填写就诊记录</el-button>
           </el-form>
-          <div class="audit">V1 记录医生人工判定结果；V2/V3 再接入 AI 建议、图像识别和历史判定复盘。</div>
+          <div class="audit">V3 记录结构化判定过程，并与 AI 建议、图像识别和历史判定复盘联动。</div>
         </el-card>
       </el-col>
     </el-row>

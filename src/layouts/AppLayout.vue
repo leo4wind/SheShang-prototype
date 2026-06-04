@@ -34,7 +34,7 @@ const filteredNavTree = computed<NavGroup[]>(() => {
 })
 
 const matched = computed(() => findGroupByPath(route.path))
-const groupTitle = computed(() => matched.value?.group.title ?? (route.path === '/home' ? '总入口' : ''))
+const groupTitle = computed(() => matched.value?.group.title ?? (route.path === '/home' ? '模块版本流程' : ''))
 const subTitle = computed(() => matched.value?.sub.title ?? '')
 const leafTitle = computed(() => {
   if (route.meta.title) return route.meta.title as string
@@ -81,12 +81,7 @@ const dependencyHint = computed(() => {
       >
         <el-menu-item index="/home">
           <el-icon><HomeFilled /></el-icon>
-          <template #title>总入口</template>
-        </el-menu-item>
-
-        <el-menu-item index="/version-roadmap">
-          <el-icon><Flag /></el-icon>
-          <template #title>版本规划</template>
+          <template #title>模块版本流程</template>
         </el-menu-item>
 
         <el-sub-menu v-for="group in filteredNavTree" :key="group.key" :index="group.key">

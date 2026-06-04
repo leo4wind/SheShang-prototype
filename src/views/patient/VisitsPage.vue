@@ -55,6 +55,9 @@ function hospitalName(id?: string) {
         <div v-if="v.visitRecord" class="row4">
           诊断：{{ v.visitRecord.snakeJudgment }} · 血清：{{ v.visitRecord.serumName }}
         </div>
+        <div v-if="v.visitRecord" class="row5">
+          已补录：诊断说明 / 用药 / 检验 / 影像
+        </div>
         <el-icon class="arrow"><ArrowRight /></el-icon>
       </div>
     </div>
@@ -77,5 +80,6 @@ function hospitalName(id?: string) {
 .row2 { font-size: 12px; color: #909399; display: flex; align-items: center; gap: 2px; }
 .row3 { font-size: 13px; color: #606266; margin-top: 6px; }
 .row4 { font-size: 13px; color: #67c23a; margin-top: 4px; }
+.row5 { font-size: 12px; color: #909399; margin-top: 3px; }
 .arrow { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #c0c4cc; }
 </style>

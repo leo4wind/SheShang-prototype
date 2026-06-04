@@ -44,11 +44,27 @@ export interface PushedGuide {
   pushedAt: string
 }
 
+export type VisitRecordAttachmentType = '伤口照片' | '检验单' | '影像附件'
+
+export interface VisitRecordAttachment {
+  id: string
+  name: string
+  type: VisitRecordAttachmentType
+  url: string
+  note: string
+}
+
 export interface VisitRecord {
   snakeJudgment: string    // 最终蛇种判定
   serumName: string        // 使用血清
   serumDose: string        // 用量
   treatment: string        // 其它处置
+  diagnosisNote: string    // 诊断说明/鉴别依据
+  medications: string      // 用药记录
+  labSummary: string       // 检验摘要
+  imagingSummary: string   // 影像/附件摘要
+  vitalSigns: string       // 生命体征摘要
+  attachments: VisitRecordAttachment[] // V1 静态附件占位
   doctorName: string
   recordedAt: string
   sourceDiagnosisAt?: string
@@ -87,6 +103,32 @@ export interface RescueEvent {
 
 function now(): string {
   return new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+}
+
+export function createDefaultVisitAttachments(): VisitRecordAttachment[] {
+  return [
+    {
+      id: 'visit-attachment-wound',
+      name: '右小腿咬伤局部照片',
+      type: '伤口照片',
+      url: mockFieldReportPhoto,
+      note: '现场伤口照片占位，演示 V1 人工补录附件回显。'
+    },
+    {
+      id: 'visit-attachment-lab',
+      name: '凝血四项检验单',
+      type: '检验单',
+      url: mockFieldReportPhoto,
+      note: '检验单图片占位，V2 接入 LIS 后自动回填结构化结果。'
+    },
+    {
+      id: 'visit-attachment-imaging',
+      name: '院内影像/附件占位',
+      type: '影像附件',
+      url: mockFieldReportPhoto,
+      note: '院内影像附件占位，V2 接入 PACS 后自动补全。'
+    }
+  ]
 }
 
 let seq = 100
@@ -144,6 +186,12 @@ export const useRescueStore = defineStore('rescue', () => {
         serumName: '抗蝮蛇毒血清',
         serumDose: '6000U 静滴',
         treatment: '局部清创、破伤风抗毒素、留观 24h',
+        diagnosisNote: '结合患者现场照片、绿色细长蛇描述及局部肿胀麻木，考虑竹叶青咬伤，按血循毒蛇伤处置。',
+        medications: '抗蝮蛇毒血清 6000U 静滴；破伤风抗毒素；局部清创后对症支持治疗。',
+        labSummary: '凝血功能轻度异常，血常规和肝肾功能待复查；建议 6 小时后复测凝血四项。',
+        imagingSummary: '已查看患者上传伤口/蛇体线索照片；院内影像待 V2 PACS 接入后自动补全。',
+        vitalSigns: '意识清楚，呼吸平稳；血压 132/78mmHg，脉搏 86 次/分，血氧 98%。',
+        attachments: createDefaultVisitAttachments(),
         doctorName: '王医生',
         recordedAt: '11:55'
       },
@@ -162,6 +210,13 @@ export const useRescueStore = defineStore('rescue', () => {
   const activeEvents = computed(() =>
     events.value
       .filter((e) => e.status !== 'discharged')
+      .slice()
+      .reverse()
+  )
+
+  // 医生工作台列表：包含已出院病例，便于 V1 出院后继续回看治疗记录
+  const workbenchEvents = computed(() =>
+    events.value
       .slice()
       .reverse()
   )
@@ -234,11 +289,12 @@ export const useRescueStore = defineStore('rescue', () => {
   function saveVisitRecord(id: string, record: VisitRecord) {
     const ev = getEvent(id)
     if (!ev) return
+    const isFirstRecord = !ev.visitRecord
     ev.visitRecord = {
       ...record,
       sourceDiagnosisAt: ev.diagnosisDraft?.confirmedAt ?? record.sourceDiagnosisAt
     }
-    advance(id, 'treating')
+    if (isFirstRecord) advance(id, 'treating')
   }
 
   function saveDiagnosisDraft(id: string, draft: DiagnosisDraft) {
@@ -256,6 +312,7 @@ export const useRescueStore = defineStore('rescue', () => {
     currentEventId,
     currentEvent,
     activeEvents,
+    workbenchEvents,
     getEvent,
     startSos,
     advance,

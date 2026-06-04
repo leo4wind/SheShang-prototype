@@ -58,6 +58,22 @@ function gotoRecord() {
 function gotoDiagnosis() {
   if (ev.value) router.push(`/doctor/diagnosis/${ev.value.id}`)
 }
+
+function discharge() {
+  if (!ev.value) return
+  rescue.discharge(ev.value.id)
+  ElMessage.success('已标记出院，患者端就诊历史会同步更新')
+}
+
+const supplementItems = computed(() => {
+  const record = ev.value?.visitRecord
+  return [
+    { label: '诊断', done: Boolean(record?.diagnosisNote) },
+    { label: '用药', done: Boolean(record?.medications) },
+    { label: '检验', done: Boolean(record?.labSummary) },
+    { label: '影像', done: Boolean(record?.imagingSummary) }
+  ]
+})
 </script>
 
 <template>
@@ -143,6 +159,43 @@ function gotoDiagnosis() {
           <div v-else class="draft-note">
             V1 将蛇种判定、血清用量和处置记录合并到就诊记录页，减少医生重复录入。
           </div>
+          <div class="supplement-status">
+            <el-tag
+              v-for="item in supplementItems"
+              :key="item.label"
+              size="small"
+              :type="item.done ? 'success' : 'info'"
+              effect="plain"
+            >
+              {{ item.label }}{{ item.done ? '已补录' : '待补录' }}
+            </el-tag>
+          </div>
+          <div v-if="ev.visitRecord" class="record-replay">
+            <div class="replay-title">
+              <span>治疗记录回显</span>
+              <el-tag size="small" type="success" effect="plain">最新记录</el-tag>
+            </div>
+            <div class="replay-grid">
+              <div class="replay-item"><span>蛇种判定</span><b>{{ ev.visitRecord.snakeJudgment }}</b></div>
+              <div class="replay-item"><span>血清</span><b>{{ ev.visitRecord.serumName }} · {{ ev.visitRecord.serumDose }}</b></div>
+              <div class="replay-item wide"><span>用药记录</span><p>{{ ev.visitRecord.medications }}</p></div>
+              <div class="replay-item wide"><span>其它处置</span><p>{{ ev.visitRecord.treatment }}</p></div>
+              <div class="replay-item wide"><span>诊断说明</span><p>{{ ev.visitRecord.diagnosisNote }}</p></div>
+              <div class="replay-item wide"><span>检验摘要</span><p>{{ ev.visitRecord.labSummary }}</p></div>
+              <div class="replay-item wide"><span>影像摘要</span><p>{{ ev.visitRecord.imagingSummary }}</p></div>
+              <div class="replay-item wide"><span>生命体征</span><p>{{ ev.visitRecord.vitalSigns }}</p></div>
+            </div>
+            <div v-if="ev.visitRecord.attachments?.length" class="replay-attachments">
+              <div v-for="attachment in ev.visitRecord.attachments" :key="attachment.id" class="replay-attachment">
+                <img :src="attachment.url" :alt="attachment.name" />
+                <div>
+                  <el-tag size="small" effect="plain">{{ attachment.type }}</el-tag>
+                  <b>{{ attachment.name }}</b>
+                  <p>{{ attachment.note }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </el-card>
       </el-col>
 
@@ -178,8 +231,9 @@ function gotoDiagnosis() {
     <div class="action-bar">
       <el-button v-if="ev.status === 'reported' || ev.status === 'hospital' || ev.status === 'sos'" type="primary" @click="accept">接诊此患者</el-button>
       <el-button type="warning" plain @click="gotoGuide">推送自救指引</el-button>
-      <el-button v-if="versionView !== 'v1'" type="primary" plain @click="gotoDiagnosis">蛇伤判定</el-button>
-      <el-button type="success" plain @click="gotoRecord">填写就诊记录</el-button>
+      <el-button v-if="versionView === 'v3'" type="primary" plain @click="gotoDiagnosis">蛇伤判定</el-button>
+      <el-button type="success" plain @click="gotoRecord">{{ ev.visitRecord ? '更新就诊记录' : '填写就诊记录' }}</el-button>
+      <el-button v-if="ev.status === 'treating'" type="success" @click="discharge">确认出院</el-button>
     </div>
   </div>
 </template>
@@ -220,6 +274,22 @@ function gotoDiagnosis() {
 .record-step em { font-size: 12px; color: #909399; font-style: normal; }
 .record-arrow { align-self: center; color: #c0c4cc; font-weight: 700; }
 .draft-note { margin-top: 10px; font-size: 13px; color: #606266; line-height: 1.6; }
+.supplement-status { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.record-replay { margin-top: 12px; border: 1px solid #ebeef5; border-radius: 8px; padding: 12px; background: #fff; }
+.replay-title { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.replay-title span { font-size: 14px; font-weight: 600; color: #303133; }
+.replay-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.replay-item { min-width: 0; }
+.replay-item.wide { grid-column: 1 / -1; }
+.replay-item span { display: block; font-size: 12px; color: #909399; margin-bottom: 3px; }
+.replay-item b { font-size: 13px; color: #303133; line-height: 1.5; word-break: break-word; }
+.replay-item p { margin: 0; font-size: 13px; color: #606266; line-height: 1.6; }
+.replay-attachments { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+.replay-attachment { border: 1px solid #ebeef5; border-radius: 8px; overflow: hidden; background: #fafafa; min-width: 0; }
+.replay-attachment img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: #f5f7fa; }
+.replay-attachment div { padding: 8px; display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
+.replay-attachment b { font-size: 13px; color: #303133; line-height: 1.4; word-break: break-word; }
+.replay-attachment p { margin: 0; font-size: 12px; color: #606266; line-height: 1.5; }
 
 .history { margin-top: 10px; }
 .h-title { font-size: 12px; color: #909399; margin-bottom: 4px; }
@@ -239,5 +309,6 @@ function gotoDiagnosis() {
 @media (max-width: 1100px) {
   .record-flow { flex-direction: column; }
   .record-arrow { transform: rotate(90deg); }
+  .replay-grid, .replay-attachments { grid-template-columns: 1fr; }
 }
 </style>

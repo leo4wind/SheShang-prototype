@@ -17,13 +17,8 @@ const routes: RouteRecordRaw[] = [
   { path: '/', redirect: '/home' },
   {
     path: '/home',
-    component: () => import('@/views/HomePage.vue'),
-    meta: { id: 'P000', title: '总入口', shell: 'pc', priority: 'v1', group: 'home', subGroup: '', journey: '', type: '工作台' }
-  },
-  {
-    path: '/version-roadmap',
     component: () => import('@/views/VersionRoadmapPage.vue'),
-    meta: { id: 'P002', title: '版本规划', shell: 'pc', priority: 'v1', group: 'planning', subGroup: '', journey: '', type: '详情' }
+    meta: { id: 'P000', title: '模块版本流程', shell: 'pc', priority: 'v1', group: 'home', subGroup: '', journey: '', type: '工作台' }
   }
 ]
 

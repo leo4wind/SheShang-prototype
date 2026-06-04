@@ -2,7 +2,7 @@
 import { computed, reactive, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { useRescueStore, type VisitRecord } from '@/stores/rescue'
+import { createDefaultVisitAttachments, useRescueStore, type VisitRecord } from '@/stores/rescue'
 import { snakeTypes } from '@/mock/data'
 
 const route = useRoute()
@@ -20,15 +20,52 @@ const usesFreshDraft = computed(() => {
   if (!diagnosisDraft.value) return false
   return ev.value?.visitRecord?.sourceDiagnosisAt !== diagnosisDraft.value.confirmedAt
 })
+const hasVisitRecord = computed(() => Boolean(ev.value?.visitRecord))
+const saveButtonText = computed(() => (hasVisitRecord.value ? '更新治疗记录' : '保存就诊记录'))
+const saveHintText = computed(() =>
+  hasVisitRecord.value
+    ? '治疗中可多次补录，保存后患者端与医生端展示最新记录'
+    : '首次保存后进入治疗中，后续可继续补录更新'
+)
 
 const form = reactive<VisitRecord>({
   snakeJudgment: '',
   serumName: '',
   serumDose: '',
   treatment: '',
+  diagnosisNote: '',
+  medications: '',
+  labSummary: '',
+  imagingSummary: '',
+  vitalSigns: '',
+  attachments: [],
   doctorName: '王医生',
   recordedAt: ''
 })
+
+const defaultDiagnosisNote = '结合现场照片、双牙痕、局部肿胀及出血倾向，考虑毒蛇咬伤，按血循毒蛇伤处理。'
+const defaultLabSummary = '凝血功能待复查；建议完善血常规、凝血四项、肝肾功能、电解质。'
+const defaultVitalSigns = '意识清楚，呼吸平稳；血压、脉搏、血氧待护士站补录。'
+const defaultTreatment = '局部清创消毒、制动抬高患肢、破伤风预防、留观 24 小时，动态复查凝血与肾功能。'
+
+function defaultMedication() {
+  if (form.serumName && form.serumDose) return `${form.serumName} ${form.serumDose}；清创、制动、留观复评。`
+  return '暂未使用抗蛇毒血清，先行清创、制动、留观复评。'
+}
+
+function defaultImagingSummary() {
+  if (ev.value?.report?.hasPhoto) return '已查看患者上传伤口/蛇体线索照片；院内影像待 V2 PACS 接入后自动补全。'
+  return '暂无院内影像；蛇体/伤口线索以患者口述为主。'
+}
+
+function fillDefaultSupplements() {
+  form.diagnosisNote = form.diagnosisNote || defaultDiagnosisNote
+  form.medications = form.medications || defaultMedication()
+  form.labSummary = form.labSummary || defaultLabSummary
+  form.imagingSummary = form.imagingSummary || defaultImagingSummary()
+  form.vitalSigns = form.vitalSigns || defaultVitalSigns
+  if (!form.attachments?.length) form.attachments = createDefaultVisitAttachments()
+}
 
 function fillFromDraft() {
   const draft = diagnosisDraft.value
@@ -43,16 +80,29 @@ function fillFromDraft() {
   ].filter(Boolean).join('；')
   form.doctorName = ev.value?.assignedDoctor ?? '王医生'
   form.recordedAt = ''
+  form.diagnosisNote = draft.notes || defaultDiagnosisNote
+  form.medications = defaultMedication()
+  form.labSummary = defaultLabSummary
+  form.imagingSummary = defaultImagingSummary()
+  form.vitalSigns = defaultVitalSigns
+  form.attachments = createDefaultVisitAttachments()
 }
 
 function resetForm() {
-  form.snakeJudgment = ''
-  form.serumName = ''
-  form.serumDose = ''
-  form.treatment = ''
+  form.snakeJudgment = '五步蛇'
+  form.serumName = '抗五步蛇毒血清'
+  form.serumDose = '8000U 静滴'
+  form.treatment = defaultTreatment
+  form.diagnosisNote = ''
+  form.medications = ''
+  form.labSummary = ''
+  form.imagingSummary = ''
+  form.vitalSigns = ''
+  form.attachments = createDefaultVisitAttachments()
   form.doctorName = ev.value?.assignedDoctor ?? '王医生'
   form.recordedAt = ''
   form.sourceDiagnosisAt = undefined
+  fillDefaultSupplements()
 }
 
 watch(
@@ -69,9 +119,11 @@ watch(
 
     if (ev.value?.visitRecord) {
       Object.assign(form, ev.value.visitRecord)
+      if (!form.attachments?.length) form.attachments = createDefaultVisitAttachments()
     } else {
       resetForm()
       fillFromDraft()
+      fillDefaultSupplements()
     }
   },
   { immediate: true }
@@ -79,7 +131,15 @@ watch(
 
 function onSnakeChange(name: string) {
   const snake = snakeTypes.find((s) => s.name === name)
-  if (snake) form.serumName = snake.serumName
+  if (snake) {
+    form.serumName = snake.serumName
+    form.serumDose = snake.venomous
+      ? (snake.dangerLevel === 3 ? '8000U 静滴' : '6000U 静滴')
+      : '暂不使用血清，留观复评'
+  }
+  if (!form.medications || form.medications.includes('清创、制动、留观复评')) {
+    form.medications = defaultMedication()
+  }
 }
 
 function save() {
@@ -88,9 +148,13 @@ function save() {
     return
   }
   if (!ev.value) return
+  const isUpdate = Boolean(ev.value.visitRecord)
   form.recordedAt = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
-  rescue.saveVisitRecord(ev.value.id, { ...form })
-  ElMessage.success('就诊记录已保存，进入治疗中')
+  rescue.saveVisitRecord(ev.value.id, {
+    ...form,
+    attachments: form.attachments.map((attachment) => ({ ...attachment }))
+  })
+  ElMessage.success(isUpdate ? '治疗记录已更新' : '就诊记录已保存，进入治疗中')
   router.push(`/doctor/patient-realtime/${ev.value.id}`)
 }
 </script>
@@ -175,7 +239,7 @@ function save() {
               :closable="false"
               show-icon
               title="V1 已合并判定与就诊记录"
-              description="医生在本页直接完成最终蛇种、血清用量和处置记录；独立规则表单作为 V2 增强入口保留。"
+              description="医生在本页直接完成最终蛇种、血清用量和处置记录；独立规则表单移至 V3 作为复盘与智能化增强入口。"
             />
             <div v-if="diagnosisDraft" class="draft-card">
               <div class="draft-head">
@@ -219,6 +283,13 @@ function save() {
       <el-col :span="13">
         <el-card shadow="never">
           <template #header><span class="bt">蛇种判定与就诊记录</span></template>
+          <el-alert
+            type="success"
+            :closable="false"
+            show-icon
+            class="record-mode-alert"
+            title="治疗中可多次补录；确认出院后作为最终记录展示。"
+          />
           <el-form :model="form" label-position="top">
             <el-form-item label="最终蛇种判定（记录内完成）" required>
               <el-select v-model="form.snakeJudgment" placeholder="选择蛇种" style="width: 100%" @change="onSnakeChange">
@@ -234,13 +305,50 @@ function save() {
             <el-form-item label="其它处置">
               <el-input v-model="form.treatment" type="textarea" :rows="4" placeholder="清创、破伤风、留观、监测项目等" />
             </el-form-item>
+            <el-divider content-position="left">V1 手填补录</el-divider>
+            <el-alert
+              type="info"
+              :closable="false"
+              show-icon
+              class="supplement-alert"
+              title="诊断、用药、检验、影像/附件和生命体征先由医生手填；V2 接入 HIS/LIS/PACS 后自动补全。"
+            />
+            <el-form-item label="诊断说明 / 鉴别依据">
+              <el-input v-model="form.diagnosisNote" type="textarea" :rows="3" />
+            </el-form-item>
+            <el-form-item label="用药记录">
+              <el-input v-model="form.medications" type="textarea" :rows="3" />
+            </el-form-item>
+            <el-form-item label="检验摘要">
+              <el-input v-model="form.labSummary" type="textarea" :rows="3" />
+            </el-form-item>
+            <el-form-item label="影像 / 附件摘要">
+              <el-input v-model="form.imagingSummary" type="textarea" :rows="3" />
+            </el-form-item>
+            <el-form-item label="生命体征摘要">
+              <el-input v-model="form.vitalSigns" type="textarea" :rows="2" />
+            </el-form-item>
+            <el-form-item label="图片附件">
+              <div class="attachment-grid">
+                <div v-for="attachment in form.attachments" :key="attachment.id" class="attachment-card">
+                  <img :src="attachment.url" :alt="attachment.name" />
+                  <div class="attachment-body">
+                    <div class="attachment-head">
+                      <b>{{ attachment.name }}</b>
+                      <el-tag size="small" effect="plain">{{ attachment.type }}</el-tag>
+                    </div>
+                    <p>{{ attachment.note }}</p>
+                  </div>
+                </div>
+              </div>
+            </el-form-item>
             <el-form-item label="记录医生">
               <el-input v-model="form.doctorName" style="width: 200px" />
             </el-form-item>
           </el-form>
           <div class="form-actions">
-            <el-button type="primary" @click="save">保存就诊记录</el-button>
-            <span class="hint">保存后该记录将进入数据治理管线（主线 2）</span>
+            <el-button type="primary" @click="save">{{ saveButtonText }}</el-button>
+            <span class="hint">{{ saveHintText }}</span>
           </div>
         </el-card>
       </el-col>
@@ -289,10 +397,22 @@ function save() {
 
 .form-actions { display: flex; align-items: center; gap: 12px; }
 .form-actions .hint { font-size: 12px; color: #909399; }
+.record-mode-alert { margin-bottom: 14px; }
+.record-mode-alert :deep(.el-alert__title) { line-height: 1.5; }
+.supplement-alert { margin-bottom: 14px; }
+.supplement-alert :deep(.el-alert__title) { line-height: 1.5; }
+.attachment-grid { width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.attachment-card { border: 1px solid #ebeef5; border-radius: 8px; overflow: hidden; background: #fff; min-width: 0; }
+.attachment-card img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: #f5f7fa; }
+.attachment-body { padding: 9px; }
+.attachment-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; }
+.attachment-head b { font-size: 13px; line-height: 1.4; color: #303133; word-break: break-word; }
+.attachment-body p { margin: 6px 0 0; font-size: 12px; line-height: 1.5; color: #606266; }
 
 @media (max-width: 1100px) {
   .flow-steps { flex-direction: column; }
   .flow-line { width: 1px; height: 14px; }
   .draft-grid { grid-template-columns: 1fr; }
+  .attachment-grid { grid-template-columns: 1fr; }
 }
 </style>

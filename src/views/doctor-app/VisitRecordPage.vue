@@ -38,6 +38,22 @@ const ev = computed(() => rescue.getEvent(eventId.value))
         <div class="kv"><span>血清</span><b>{{ ev.visitRecord.serumName }}</b></div>
         <div class="kv"><span>用量</span><b>{{ ev.visitRecord.serumDose }}</b></div>
         <div class="kv col"><span>其它处置</span><p>{{ ev.visitRecord.treatment }}</p></div>
+        <el-divider />
+        <div class="kv col"><span>诊断说明</span><p>{{ ev.visitRecord.diagnosisNote }}</p></div>
+        <div class="kv col"><span>用药记录</span><p>{{ ev.visitRecord.medications }}</p></div>
+        <div class="kv col"><span>检验摘要</span><p>{{ ev.visitRecord.labSummary }}</p></div>
+        <div class="kv col"><span>影像 / 附件</span><p>{{ ev.visitRecord.imagingSummary }}</p></div>
+        <div class="kv col"><span>生命体征</span><p>{{ ev.visitRecord.vitalSigns }}</p></div>
+        <div v-if="ev.visitRecord.attachments?.length" class="attachment-list">
+          <div v-for="attachment in ev.visitRecord.attachments" :key="attachment.id" class="attachment-item">
+            <img :src="attachment.url" :alt="attachment.name" />
+            <div>
+              <span>{{ attachment.type }}</span>
+              <b>{{ attachment.name }}</b>
+              <p>{{ attachment.note }}</p>
+            </div>
+          </div>
+        </div>
         <div class="kv"><span>记录医生</span><b>{{ ev.visitRecord.doctorName }} · {{ ev.visitRecord.recordedAt }}</b></div>
       </div>
       <div v-else class="card empty-record">
@@ -79,6 +95,13 @@ const ev = computed(() => rescue.getEvent(eventId.value))
 .kv span { color: #909399; }
 .kv.col { flex-direction: column; gap: 4px; }
 .kv.col p { margin: 0; line-height: 1.5; }
+.attachment-list { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
+.attachment-item { display: flex; gap: 9px; border: 1px solid #ebeef5; border-radius: 8px; padding: 8px; background: #fafafa; }
+.attachment-item img { width: 72px; height: 72px; border-radius: 6px; object-fit: cover; flex: 0 0 auto; background: #f5f7fa; }
+.attachment-item div { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.attachment-item span { font-size: 11px; color: #909399; }
+.attachment-item b { font-size: 13px; color: #303133; line-height: 1.4; word-break: break-word; }
+.attachment-item p { margin: 0; font-size: 12px; color: #606266; line-height: 1.5; }
 
 .empty-record { text-align: center; color: #909399; }
 .empty-record p { margin: 8px 0 2px; font-size: 14px; }

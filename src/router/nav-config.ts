@@ -87,7 +87,7 @@ export const navTree: NavGroup[] = [
           { id: 'P201', title: '救助工作台', routePath: '/doctor/rescue', menuPath: '/doctor/rescue', view: 'doctor/RescuePage', priority: 'v1', shell: 'pc', journey: 'J1', type: '看板' },
           { id: 'P202', title: '患者实时视图', routePath: '/doctor/patient-realtime/:id', menuPath: '/doctor/patient-realtime/demo', view: 'doctor/PatientRealtimePage', priority: 'v1', shell: 'pc', journey: 'J1', type: '详情' },
           { id: 'P203', title: '自救指引推送', routePath: '/doctor/rescue-guide', menuPath: '/doctor/rescue-guide', view: 'doctor/RescueGuidePage', priority: 'v1', shell: 'pc', journey: 'J1', type: '表单' },
-          { id: 'P204', title: '蛇伤判定（规则表单）', routePath: '/doctor/diagnosis/:id', menuPath: '/doctor/diagnosis/demo', view: 'doctor/DiagnosisPage', priority: 'v2', shell: 'pc', journey: 'J1', type: '详情+表单' },
+          { id: 'P204', title: '蛇伤判定（规则表单）', routePath: '/doctor/diagnosis/:id', menuPath: '/doctor/diagnosis/demo', view: 'doctor/DiagnosisPage', priority: 'v3', shell: 'pc', journey: 'J3', type: '详情+表单' },
           { id: 'P205-PC', title: '就诊记录', routePath: '/doctor/visit-record/:id', menuPath: '/doctor/visit-record/demo', view: 'doctor/VisitRecordPage', priority: 'v1', shell: 'pc', journey: 'J1', type: '表单' },
           { id: 'P223', title: '历史判定复盘', routePath: '/doctor/diagnosis/history', menuPath: '/doctor/diagnosis/history', view: 'doctor/DiagnosisHistoryPage', priority: 'v3', shell: 'pc', journey: 'J3', type: '列表' }
         ]
@@ -216,12 +216,6 @@ export const navTree: NavGroup[] = [
         children: [
           { id: 'P402', title: '角色与权限', routePath: '/system/permissions', menuPath: '/system/permissions', view: 'system/PermissionsPage', priority: 'v1', shell: 'pc', journey: 'J3', type: '列表+表单' },
           { id: 'P403', title: '医院与资质', routePath: '/system/hospitals', menuPath: '/system/hospitals', view: 'system/HospitalsPage', priority: 'v1', shell: 'pc', journey: 'J1', type: '列表+表单' }
-        ]
-      },
-      {
-        title: '演示',
-        children: [
-          { id: 'P001', title: '演示模式说明', routePath: '/demo-guide', menuPath: '/demo-guide', view: 'DemoGuidePage', priority: 'v2', shell: 'pc', journey: '', type: '详情' }
         ]
       },
       {
