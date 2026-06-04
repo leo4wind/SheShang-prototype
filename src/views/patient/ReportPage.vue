@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import PhoneNavBar from '@/components/PhoneNavBar.vue'
@@ -21,6 +21,11 @@ const form = reactive<FieldReport>({
 })
 
 const recording = ref(false)
+const contactLine = computed(() =>
+  rescue.isPatientLoggedIn
+    ? `${currentPatient.emergencyContact} ${currentPatient.emergencyPhone}`
+    : '临时联系人：家属 · 手机尾号 8830'
+)
 
 function toggleVoice() {
   if (recording.value) {
@@ -65,8 +70,16 @@ function submit() {
         <div class="block-title">自动带入</div>
         <div class="kv"><span>时间</span><b>{{ new Date().toLocaleString('zh-CN') }}</b></div>
         <div class="kv"><span>定位</span><b>青龙山林场北坡</b></div>
-        <div class="kv"><span>联系人</span><b>{{ currentPatient.emergencyContact }} {{ currentPatient.emergencyPhone }}</b></div>
+        <div class="kv"><span>联系人</span><b>{{ contactLine }}</b></div>
       </div>
+
+      <el-alert
+        v-if="!rescue.isPatientLoggedIn"
+        type="info"
+        :closable="false"
+        show-icon
+        title="未登录也可先上报现场信息，登录或到院核验后再绑定患者档案。"
+      />
 
       <el-form label-position="top" class="form">
         <el-form-item label="当前症状（口述/语音）" required>

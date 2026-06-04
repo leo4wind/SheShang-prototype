@@ -40,6 +40,12 @@ function showQrcode() {
     </div>
 
     <div v-else class="body">
+      <div v-if="ev.identityStatus === 'guest'" class="identity-card">
+        <el-icon color="#e6a23c"><InfoFilled /></el-icon>
+        <span>当前为临时求救身份，登录后可保存到我的就诊。</span>
+        <el-button link type="primary" @click="router.push('/patient/login')">登录</el-button>
+      </div>
+
       <div class="status-card">
         <div class="status-now">{{ STATUS_LABEL[ev.status] }}</div>
         <div class="event-id">{{ ev.id }} · {{ ev.createdAt }}发起</div>
@@ -165,6 +171,19 @@ function showQrcode() {
   font-size: 13px;
   color: #67c23a;
 }
+
+.identity-card {
+  background: #fdf6ec;
+  border: 1px solid #faecd8;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #b88230;
+}
+.identity-card span { flex: 1; }
 
 .record-line { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; padding: 4px 0; }
 .record-line span, .record-block span { color: #909399; }

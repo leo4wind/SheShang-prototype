@@ -23,6 +23,17 @@ function openEntry(e: typeof entries[number]) {
   }
   router.push(e.to)
 }
+
+function toggleLogin() {
+  if (rescue.isPatientLoggedIn) {
+    rescue.logoutPatient()
+    ElMessage.info('已切换为未登录游客模式')
+  } else {
+    const hadCurrentEvent = Boolean(rescue.currentEvent)
+    rescue.loginPatient()
+    ElMessage.success(hadCurrentEvent ? '已登录，并关联当前求救事件' : '已切换为已登录患者')
+  }
+}
 </script>
 
 <template>
@@ -30,11 +41,18 @@ function openEntry(e: typeof entries[number]) {
     <PhoneNavBar title="人民蛇伤" theme="primary" />
     <div class="body">
       <div class="profile">
-        <el-avatar :size="48" style="background:#409eff">{{ currentPatient.name.charAt(0) }}</el-avatar>
+        <el-avatar :size="48" style="background:#409eff">
+          {{ rescue.isPatientLoggedIn ? currentPatient.name.charAt(0) : '急' }}
+        </el-avatar>
         <div>
-          <div class="name">{{ currentPatient.name }}</div>
-          <div class="sub">{{ currentPatient.gender }} · {{ currentPatient.age }}岁 · {{ currentPatient.phone }}</div>
+          <div class="name">{{ rescue.isPatientLoggedIn ? currentPatient.name : '游客急救模式' }}</div>
+          <div class="sub">
+            {{ rescue.isPatientLoggedIn ? `${currentPatient.gender} · ${currentPatient.age}岁 · ${currentPatient.phone}` : '未登录也可 SOS，登录后保存本次记录' }}
+          </div>
         </div>
+        <el-button link type="primary" size="small" @click="toggleLogin">
+          {{ rescue.isPatientLoggedIn ? '退出演示' : '登录演示' }}
+        </el-button>
       </div>
 
       <div
@@ -74,6 +92,7 @@ function openEntry(e: typeof entries[number]) {
   background: #fff; border-radius: 10px; padding: 16px;
   display: flex; align-items: center; gap: 12px;
 }
+.profile > div:nth-child(2) { flex: 1; min-width: 0; }
 .profile .name { font-size: 16px; font-weight: 600; }
 .profile .sub { font-size: 12px; color: #909399; margin-top: 4px; }
 

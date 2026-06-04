@@ -43,6 +43,17 @@ function hospitalName(id?: string) {
       <el-table :data="rescue.workbenchEvents" style="width: 100%" @row-click="(row: any) => open(row.id)" class="clickable">
         <el-table-column prop="id" label="事件号" width="100" />
         <el-table-column prop="patientName" label="患者" width="90" />
+        <el-table-column label="身份" width="120">
+          <template #default="{ row }">
+            <el-tag
+              size="small"
+              :type="row.identityStatus === 'bound' ? 'success' : 'warning'"
+              effect="plain"
+            >
+              {{ row.identityStatus === 'bound' ? '已绑定' : '临时身份' }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column label="状态" width="110">
           <template #default="{ row }">
             <el-tag size="small" :type="statusTagType[row.status as RescueStatus] as any">

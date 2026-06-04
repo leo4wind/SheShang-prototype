@@ -30,9 +30,25 @@ const patientInfo = computed(() => {
     name: ev.value?.patientName ?? '—',
     gender: '—', age: 0, phone: '—',
     emergencyContact: '—', emergencyPhone: '—',
-    pastHistory: ['（既往史从专病库 D1 调阅，本患者暂无档案）'],
+    pastHistory: ['既往史待到院核验后关联'],
     allergy: [], bloodType: '—'
   }
+})
+
+const identityStatusText = computed(() =>
+  ev.value?.identityStatus === 'bound' ? '已绑定患者档案' : '临时求救身份'
+)
+const identityStatusType = computed(() =>
+  ev.value?.identityStatus === 'bound' ? 'success' : 'warning'
+)
+const identityDetail = computed(() => {
+  if (!ev.value) return ''
+  if (ev.value.identityStatus === 'bound') {
+    return ev.value.boundBy === 'hospital-checkin'
+      ? `到院核验绑定 · ${ev.value.boundAt ?? '—'}`
+      : `登录注册绑定 · ${ev.value.boundAt ?? '—'}`
+  }
+  return '未登录也可救助；到院核验或患者登录后绑定正式档案'
 })
 
 const statusTagType: Record<RescueStatus, string> = {
@@ -89,6 +105,7 @@ const supplementItems = computed(() => {
       <div class="head-main">
         <h2>{{ ev.patientName }} · {{ ev.id }}</h2>
         <el-tag :type="statusTagType[ev.status] as any">{{ STATUS_LABEL[ev.status] }}</el-tag>
+        <el-tag :type="identityStatusType as any" effect="plain">{{ identityStatusText }}</el-tag>
       </div>
       <MockDataLabel />
     </div>
@@ -203,6 +220,10 @@ const supplementItems = computed(() => {
       <el-col :span="10">
         <el-card shadow="never" class="block">
           <template #header><span class="bt">患者档案（专病库 D1）</span></template>
+          <div class="identity-box">
+            <el-tag size="small" :type="identityStatusType as any">{{ identityStatusText }}</el-tag>
+            <span>{{ identityDetail }}</span>
+          </div>
           <el-descriptions :column="1" size="small">
             <el-descriptions-item label="基本">{{ patientInfo.gender }} · {{ patientInfo.age }}岁 · {{ patientInfo.bloodType }}</el-descriptions-item>
             <el-descriptions-item label="联系">{{ patientInfo.phone }}</el-descriptions-item>
@@ -292,6 +313,17 @@ const supplementItems = computed(() => {
 .replay-attachment p { margin: 0; font-size: 12px; color: #606266; line-height: 1.5; }
 
 .history { margin-top: 10px; }
+.identity-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #ebeef5;
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  background: #fafafa;
+}
+.identity-box span:last-child { font-size: 12px; color: #606266; line-height: 1.5; }
 .h-title { font-size: 12px; color: #909399; margin-bottom: 4px; }
 .history ul { padding-left: 18px; margin: 0; }
 .history li { font-size: 13px; margin: 3px 0; }

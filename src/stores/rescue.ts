@@ -46,6 +46,9 @@ export interface PushedGuide {
 
 export type VisitRecordAttachmentType = '伤口照片' | '检验单' | '影像附件'
 
+export type IdentityStatus = 'guest' | 'bound'
+export type IdentityBoundBy = 'login' | 'hospital-checkin'
+
 export interface VisitRecordAttachment {
   id: string
   name: string
@@ -86,8 +89,11 @@ export interface DiagnosisDraft {
 
 export interface RescueEvent {
   id: string
-  patientId: string
+  patientId?: string
   patientName: string
+  identityStatus: IdentityStatus
+  boundAt?: string
+  boundBy?: IdentityBoundBy
   status: RescueStatus
   createdAt: string
   location: string
@@ -140,6 +146,9 @@ export const useRescueStore = defineStore('rescue', () => {
       id: 'EV-098',
       patientId: 'p-02',
       patientName: '李德海',
+      identityStatus: 'bound',
+      boundAt: '14:12',
+      boundBy: 'hospital-checkin',
       status: 'accepted',
       createdAt: '14:02',
       location: '青龙山林场北坡',
@@ -163,6 +172,9 @@ export const useRescueStore = defineStore('rescue', () => {
       id: 'EV-097',
       patientId: 'p-03',
       patientName: '赵秀兰',
+      identityStatus: 'bound',
+      boundAt: '11:35',
+      boundBy: 'hospital-checkin',
       status: 'treating',
       createdAt: '11:20',
       location: '后山竹林',
@@ -201,6 +213,8 @@ export const useRescueStore = defineStore('rescue', () => {
 
   // 当前演示患者正在进行的事件（患者端读写的对象）
   const currentEventId = ref<string | null>(null)
+  // 原型默认演示“已注册且已登录”用户；可在患者端切换到游客急救模式。
+  const isPatientLoggedIn = ref(true)
 
   const currentEvent = computed(() =>
     events.value.find((e) => e.id === currentEventId.value) ?? null
@@ -225,13 +239,41 @@ export const useRescueStore = defineStore('rescue', () => {
     return events.value.find((e) => e.id === id)
   }
 
+  function bindEventToCurrentPatient(id: string, boundBy: IdentityBoundBy) {
+    const ev = getEvent(id)
+    if (!ev) return
+    const needsBindingStamp = ev.identityStatus !== 'bound' || !ev.boundAt
+    ev.patientId = currentPatient.id
+    ev.patientName = currentPatient.name
+    ev.identityStatus = 'bound'
+    if (needsBindingStamp) {
+      ev.boundAt = now()
+      ev.boundBy = boundBy
+    } else if (!ev.boundBy) {
+      ev.boundBy = boundBy
+    }
+  }
+
+  function loginPatient() {
+    isPatientLoggedIn.value = true
+    if (currentEvent.value) bindEventToCurrentPatient(currentEvent.value.id, 'login')
+  }
+
+  function logoutPatient() {
+    isPatientLoggedIn.value = false
+  }
+
   // 患者端：发起求救 → 创建当前事件
   function startSos(location: string): RescueEvent {
     seq += 1
+    const loggedIn = isPatientLoggedIn.value
     const ev: RescueEvent = {
       id: `EV-${seq}`,
-      patientId: currentPatient.id,
-      patientName: currentPatient.name,
+      patientId: loggedIn ? currentPatient.id : undefined,
+      patientName: loggedIn ? currentPatient.name : '临时求救患者',
+      identityStatus: loggedIn ? 'bound' : 'guest',
+      boundAt: loggedIn ? now() : undefined,
+      boundBy: loggedIn ? 'login' : undefined,
       status: 'sos',
       createdAt: now(),
       location,
@@ -283,6 +325,8 @@ export const useRescueStore = defineStore('rescue', () => {
   }
 
   function markArrived(id: string) {
+    const ev = getEvent(id)
+    if (ev?.identityStatus === 'guest') bindEventToCurrentPatient(id, 'hospital-checkin')
     advance(id, 'arrived')
   }
 
@@ -310,10 +354,14 @@ export const useRescueStore = defineStore('rescue', () => {
   return {
     events,
     currentEventId,
+    isPatientLoggedIn,
     currentEvent,
     activeEvents,
     workbenchEvents,
     getEvent,
+    bindEventToCurrentPatient,
+    loginPatient,
+    logoutPatient,
     startSos,
     advance,
     selectHospital,

@@ -17,11 +17,19 @@ const eventId = computed(() => {
 })
 const ev = computed(() => rescue.getEvent(eventId.value))
 const hospital = computed(() => (ev.value?.selectedHospitalId ? getHospital(ev.value.selectedHospitalId) : undefined))
+const patientLine = computed(() => {
+  if (!ev.value) return ''
+  if (ev.value.identityStatus === 'bound') {
+    return `${currentPatient.name} · ${currentPatient.gender} · ${currentPatient.age}岁`
+  }
+  return '临时求救身份 · 到院核验后绑定档案'
+})
 
 function markArrived() {
   if (ev.value) {
+    const wasGuest = ev.value.identityStatus === 'guest'
     rescue.markArrived(ev.value.id)
-    ElMessage.success('已核验到院，医生将开始判定')
+    ElMessage.success(wasGuest ? '已核验到院，并绑定患者档案' : '已核验到院，医生将开始判定')
     router.push(`/patient/waiting/${ev.value.id}`)
   }
 }
@@ -35,17 +43,18 @@ function markArrived() {
       <el-empty description="未找到求救事件" />
     </div>
 
-    <div v-else class="body">
-      <div class="card">
-        <div class="hint">到院后出示给分诊台核验</div>
-        <div class="qr">
+      <div v-else class="body">
+        <div class="card">
+          <div class="hint">到院后出示给分诊台核验</div>
+          <div class="desc">二维码用于医院核验本次求救事件，到院后可绑定医院患者档案。</div>
+          <div class="qr">
           <!-- 占位二维码：用 CSS 棋盘格模拟 -->
           <div class="qr-grid">
             <el-icon :size="48"><Grid /></el-icon>
           </div>
         </div>
         <div class="event-id">{{ ev.id }}</div>
-        <div class="patient">{{ currentPatient.name }} · {{ currentPatient.gender }} · {{ currentPatient.age }}岁</div>
+        <div class="patient">{{ patientLine }}</div>
         <div v-if="hospital" class="hospital">前往：{{ hospital.name }}</div>
       </div>
 
@@ -73,6 +82,7 @@ function markArrived() {
   gap: 10px;
 }
 .hint { font-size: 13px; color: #909399; }
+.desc { font-size: 12px; color: #606266; line-height: 1.5; text-align: center; }
 .qr {
   width: 180px;
   height: 180px;
