@@ -30,3 +30,7 @@ dist-ssr
 
 # OS
 Thumbs.db
+.env
+reasonix.toml
+.codegraph/daemon.pid
+.codegraph/.gitignore
