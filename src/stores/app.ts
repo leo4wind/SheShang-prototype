@@ -1,32 +1,23 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import type { Priority } from '@/router/nav-config'
 
-// 当前演示角色（用于左菜单顶部展示和未来的权限模拟）
-export type DemoRole =
-  | 'patient'        // 蛇伤患者
-  | 'doctor'         // 接诊医生
-  | 'expert'         // 多中心专家
-  | 'data-admin'     // 数据管理员
-  | 'researcher'     // 科研人员
-  | 'sys-admin'      // 系统管理员
+export type VersionView = Priority
 
-export const ROLE_LABEL: Record<DemoRole, string> = {
-  patient: '蛇伤患者 / 家属',
-  doctor: '接诊医生',
-  expert: '多中心专家',
-  'data-admin': '数据管理员',
-  researcher: '科研人员',
-  'sys-admin': '系统管理员'
+export const VERSION_VIEW_LABEL: Record<VersionView, string> = {
+  v1: 'V1 最小闭环',
+  v2: 'V2 含协同随访',
+  v3: 'V3 全部能力'
 }
 
 export const useAppStore = defineStore('app', () => {
-  const role = ref<DemoRole>('doctor')
+  const versionView = ref<VersionView>('v3')
   const demoMode = ref(false)
   const pushCount = ref(0)         // 演示模式下记录推送次数（呼应 journey-4 的频次控制可视化）
   const sidebarCollapsed = ref(false)
 
-  function setRole(r: DemoRole) {
-    role.value = r
+  function setVersionView(v: VersionView) {
+    versionView.value = v
   }
 
   function toggleDemoMode() {
@@ -42,5 +33,14 @@ export const useAppStore = defineStore('app', () => {
     sidebarCollapsed.value = !sidebarCollapsed.value
   }
 
-  return { role, demoMode, pushCount, sidebarCollapsed, setRole, toggleDemoMode, incrementPush, toggleSidebar }
+  return {
+    versionView,
+    demoMode,
+    pushCount,
+    sidebarCollapsed,
+    setVersionView,
+    toggleDemoMode,
+    incrementPush,
+    toggleSidebar
+  }
 })

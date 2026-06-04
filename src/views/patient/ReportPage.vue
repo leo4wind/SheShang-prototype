@@ -5,17 +5,19 @@ import { ElMessage } from 'element-plus'
 import PhoneNavBar from '@/components/PhoneNavBar.vue'
 import { useRescueStore, type FieldReport } from '@/stores/rescue'
 import { currentPatient } from '@/mock/data'
+import mockFieldReportPhoto from '@/assets/mock-field-report.svg'
 
 const router = useRouter()
 const rescue = useRescueStore()
 
 const form = reactive<FieldReport>({
-  symptoms: '',
-  selfRescue: '',
-  bittenTime: '',
-  snakeDescription: '',
-  hasPhoto: false,
-  voiceSeconds: 0
+  symptoms: '右小腿剧痛、肿胀，伤口两个牙印渗血',
+  selfRescue: '已用鞋带在膝盖下方绷扎，并尽量减少走动',
+  bittenTime: '13:50 左右',
+  snakeDescription: '土黄色，三角头，约 1 米，向草丛逃走',
+  hasPhoto: true,
+  photoUrl: mockFieldReportPhoto,
+  voiceSeconds: 12
 })
 
 const recording = ref(false)
@@ -33,6 +35,7 @@ function toggleVoice() {
 
 function fakeUpload(kind: string) {
   form.hasPhoto = true
+  form.photoUrl = mockFieldReportPhoto
   ElMessage.success(`已添加${kind}照片（占位）`)
 }
 
@@ -87,6 +90,13 @@ function submit() {
         </el-form-item>
 
         <el-form-item label="现场照片">
+          <div v-if="form.hasPhoto" class="photo-preview">
+            <img :src="form.photoUrl" alt="现场照片预览" />
+            <div class="photo-meta">
+              <b>已添加现场照片</b>
+              <span>医生端将同步查看该照片</span>
+            </div>
+          </div>
           <div class="uploads">
             <div class="upload-box" @click="fakeUpload('蛇')">
               <el-icon :size="24"><Camera /></el-icon>
@@ -95,10 +105,6 @@ function submit() {
             <div class="upload-box" @click="fakeUpload('伤口')">
               <el-icon :size="24"><Camera /></el-icon>
               <span>拍伤口</span>
-            </div>
-            <div v-if="form.hasPhoto" class="upload-box done">
-              <el-icon :size="24"><PictureFilled /></el-icon>
-              <span>已添加</span>
             </div>
           </div>
           <div class="upload-hint">蛇逃跑可跳过照片，用上方文字描述</div>
@@ -130,6 +136,19 @@ function submit() {
 }
 .form :deep(.el-form-item__label) { font-size: 13px; padding-bottom: 2px; }
 .voice-btn { margin-top: 8px; }
+
+.photo-preview {
+  width: 100%;
+  border: 1px solid #ebeef5;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f8fbff;
+  margin-bottom: 10px;
+}
+.photo-preview img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.photo-meta { display: flex; justify-content: space-between; gap: 8px; padding: 8px 10px; font-size: 12px; }
+.photo-meta b { color: #303133; }
+.photo-meta span { color: #909399; }
 
 .uploads { display: flex; gap: 10px; }
 .upload-box {

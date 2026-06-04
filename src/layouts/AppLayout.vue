@@ -2,15 +2,36 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { navTree, findGroupByPath } from '@/router/nav-config'
-import { useAppStore, ROLE_LABEL, type DemoRole } from '@/stores/app'
+import { navTree, findGroupByPath, type NavGroup, type Priority } from '@/router/nav-config'
+import { useAppStore, VERSION_VIEW_LABEL, type VersionView } from '@/stores/app'
 import PhoneShell from '@/components/PhoneShell.vue'
 
 const route = useRoute()
 const appStore = useAppStore()
-const { role, demoMode, pushCount, sidebarCollapsed } = storeToRefs(appStore)
+const { versionView, demoMode, pushCount, sidebarCollapsed } = storeToRefs(appStore)
 
-const roleOptions = (Object.keys(ROLE_LABEL) as DemoRole[]).map((k) => ({ value: k, label: ROLE_LABEL[k] }))
+const versionViewOptions = (Object.keys(VERSION_VIEW_LABEL) as VersionView[]).map((k) => ({
+  value: k,
+  label: VERSION_VIEW_LABEL[k]
+}))
+
+const versionRank: Record<Priority, number> = { v1: 1, v2: 2, v3: 3 }
+
+const filteredNavTree = computed<NavGroup[]>(() => {
+  const maxRank = versionRank[versionView.value]
+
+  return navTree
+    .map((group) => ({
+      ...group,
+      children: group.children
+        .map((sub) => ({
+          ...sub,
+          children: sub.children.filter((leaf) => !leaf.hiddenFromMenu && versionRank[leaf.priority] <= maxRank)
+        }))
+        .filter((sub) => sub.children.length > 0)
+    }))
+    .filter((group) => group.children.length > 0)
+})
 
 const matched = computed(() => findGroupByPath(route.path))
 const groupTitle = computed(() => matched.value?.group.title ?? (route.path === '/home' ? '总入口' : ''))
@@ -28,17 +49,25 @@ const priorityTagType = computed(() => {
   if (p === 'v2') return 'warning'
   return 'info'
 })
+
+const dependencyHint = computed(() => {
+  const p = route.meta.priority as string | undefined
+  if (p === 'v1') return 'V1 最小急救接诊闭环，可独立演示'
+  if (p === 'v2') return 'V2 依赖 V1 就诊档案与医生后台，演示协同/随访增强'
+  if (p === 'v3') return 'V3 依赖数据治理与科研底座，作为后续增强占位'
+  return ''
+})
 </script>
 
 <template>
   <el-container class="app-layout">
     <el-aside :width="sidebarCollapsed ? '64px' : '280px'" class="aside">
       <div class="aside-header">
-        <el-icon :size="22"><Avatar /></el-icon>
-        <div v-if="!sidebarCollapsed" class="role-info">
-          <div class="role-label">演示角色</div>
-          <el-select v-model="role" size="small" placeholder="选择角色">
-            <el-option v-for="o in roleOptions" :key="o.value" :value="o.value" :label="o.label" />
+        <el-icon :size="22"><Filter /></el-icon>
+        <div v-if="!sidebarCollapsed" class="view-info">
+          <div class="view-label">版本视图</div>
+          <el-select v-model="versionView" size="small" placeholder="选择版本视图">
+            <el-option v-for="o in versionViewOptions" :key="o.value" :value="o.value" :label="o.label" />
           </el-select>
         </div>
       </div>
@@ -60,7 +89,7 @@ const priorityTagType = computed(() => {
           <template #title>版本规划</template>
         </el-menu-item>
 
-        <el-sub-menu v-for="group in navTree" :key="group.key" :index="group.key">
+        <el-sub-menu v-for="group in filteredNavTree" :key="group.key" :index="group.key">
           <template #title>
             <el-icon><component :is="group.icon" /></el-icon>
             <span>{{ group.title }}</span>
@@ -101,6 +130,7 @@ const priorityTagType = computed(() => {
           <el-tag v-if="route.meta.priority" size="small" :type="priorityTagType">
             {{ route.meta.priority }}
           </el-tag>
+          <el-tag v-if="dependencyHint" size="small" effect="plain">{{ dependencyHint }}</el-tag>
           <el-tag v-if="route.meta.journey" size="small" effect="plain">{{ route.meta.journey }}</el-tag>
         </div>
         <div class="header-right">
@@ -156,12 +186,12 @@ const priorityTagType = computed(() => {
   color: #fff;
 }
 
-.role-info {
+.view-info {
   flex: 1;
   min-width: 0;
 }
 
-.role-label {
+.view-label {
   font-size: 12px;
   color: #909399;
   margin-bottom: 4px;
@@ -217,6 +247,8 @@ const priorityTagType = computed(() => {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
+  min-width: 0;
 }
 
 .toggle {

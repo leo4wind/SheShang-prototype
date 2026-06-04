@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// 通用页面占位骨架。用于 v1 阶段的所有空白页：
+// 通用页面占位骨架。用于静态原型里的空白页：
 // 1. 顶部 chips 显示 ID / 主线 / 终端 / 类型 / 优先级
 // 2. 中间一段说明文字 + 文档链接，便于点开就知道这页要做什么
 // 3. slot 留给后续填充
@@ -77,33 +77,18 @@ const fallback = computed(() => ({
           <p>填充本页时请参考：</p>
           <ul>
             <li>
-              <code>docs/page-inventory.md</code> — 找到
-              <strong>{{ id ?? fallback.id }}</strong> 行
+              <code>docs/蛇伤专病PRD-v1.1.md</code> — 按唯一 PRD 口径确认页面能力
             </li>
             <li v-if="(journey ?? fallback.journey)">
-              <code>docs/journeys/journey-{{ journeyToFile(journey ?? fallback.journey) }}.md</code>
-              — 该页在主线里的位置
+              <strong>{{ journey ?? fallback.journey }}</strong> — 作为历史主线编号，仅辅助定位
             </li>
-            <li><code>docs/information-architecture.md</code> — 跨终端跳转约定</li>
+            <li><code>plan/PRD-1.1-指导文档.md</code> — 查看本轮原型改造清单</li>
           </ul>
         </div>
       </el-empty>
     </slot>
   </div>
 </template>
-
-<script lang="ts">
-function journeyToFile(j?: string): string {
-  if (!j) return '?'
-  const first = j.charAt(1)
-  if (first === '1') return '1-emergency'
-  if (first === '2') return '2-data'
-  if (first === '3') return '3-doctor'
-  if (first === '4') return '4-care'
-  return '?'
-}
-export { journeyToFile }
-</script>
 
 <style scoped>
 .page-skeleton {

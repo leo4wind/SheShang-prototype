@@ -5,24 +5,19 @@ const router = useRouter()
 
 const journeys = [
   {
-    code: 'J1', name: '蛇伤急救', color: '#f56c6c', terminals: '患者小程序 ↔ 医生 PC',
-    steps: ['患者一键 SOS', '选就近有资质医院', '上报现场 / 等待', '医生工作台接诊', '推送自救指引 / 填就诊记录'],
+    code: 'V1', name: '急救接诊闭环', color: '#f56c6c', terminals: '患者小程序 ↔ 医生 PC ↔ 内网最小导入',
+    steps: ['患者一键 SOS', '就近医院推荐', '医生工作台接诊', '推送自救指引', '记录内完成蛇种判定与就诊记录 / 患者查看历史'],
     start: '/patient/sos', startLabel: '从求救首页开始'
   },
   {
-    code: 'J3', name: '多中心协作', color: '#e6a23c', terminals: '医生 PC → 医生 APP',
-    steps: ['PC 发起转诊 / MDT / 共享', 'APP 收件箱接收', '接受 / 拒绝', 'MDT 会诊室', '患者 360 全景'],
+    code: 'V2', name: '协同与持续服务', color: '#e6a23c', terminals: '医生 PC → 医生 APP → 患者小程序',
+    steps: ['PC 发起转诊 / MDT / 共享', 'APP 收件箱接收', '患者 360 全景', '随访计划 / 用药打卡', '医患消息与培训中心'],
     start: '/doctor/referral/new', startLabel: '从发起转诊开始'
   },
   {
-    code: 'J4', name: '健康陪护', color: '#67c23a', terminals: '患者小程序（+ 医生回看）',
-    steps: ['随访计划时间轴', '用药打卡 / 日历', '陪护对话（状态机）', '随访问卷 / 知识', '健康趋势'],
-    start: '/patient/care/timeline', startLabel: '从随访计划开始'
-  },
-  {
-    code: 'J2', name: '数据治理底座', color: '#409eff', terminals: '内网专病库',
-    steps: ['冷热双通道接入', '落库总览', '多维查询导出', '统计分析', '患者 360（内网脱敏）'],
-    start: '/intranet/ingest', startLabel: '从数据接入开始'
+    code: 'V3', name: '治理科研与智能化', color: '#409eff', terminals: '内网专病库',
+    steps: ['清洗 / 脱敏 / 映射 / 质控', '质控工单查阅原文', '科研 CRF', '数据流转大屏', '图像识别 / Agent / 治疗路径'],
+    start: '/intranet/qc', startLabel: '从质控工作台开始'
   }
 ]
 </script>
@@ -31,11 +26,11 @@ const journeys = [
   <div class="demo-guide">
     <div class="hero">
       <h1>圣蛇蛇伤一体化平台 · 演示导览</h1>
-      <p>四条主线讲一个完整故事：从被蛇咬伤的那一刻，到救治、协作、康复，以及背后的数据底座。</p>
+      <p>按 PRD 1.1 的三层版本故事演示：V1 急救接诊闭环，V2 协同随访，V3 治理科研与智能化。</p>
       <div class="hero-tags">
         <el-tag effect="plain">团队对齐 / 设计评审</el-tag>
-        <el-tag effect="plain" type="success">v1 + v2 mock</el-tag>
-        <el-tag effect="plain" type="warning">AI 全部为算法接入点占位</el-tag>
+        <el-tag effect="plain" type="success">PRD 1.1 口径</el-tag>
+        <el-tag effect="plain" type="warning">AI 为 V2/V3 增强占位</el-tag>
       </div>
     </div>
 
@@ -60,7 +55,7 @@ const journeys = [
     <el-alert
       type="info" :closable="false" show-icon class="foot"
       title="提示"
-      description="带 :id 的详情页从菜单直点会自动回退到预置示例；要看真实联动请按主线流程走，跨终端回看用浏览器后退。完整说明见 docs/操作手册.md。"
+      description="带 :id 的详情页从菜单直点会自动回退到预置示例；左侧版本视图可切换 V1 / V2 / V3 演示范围。"
     />
   </div>
 </template>

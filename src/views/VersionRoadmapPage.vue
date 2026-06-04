@@ -2,30 +2,27 @@
 const versions = [
   {
     key: 'v1',
-    title: '基础闭环',
-    subtitle: '先把核心业务跑通',
+    title: '急救接诊闭环',
+    subtitle: '只跑通最小可演示主线',
     color: '#67c23a',
-    period: 'W2 末 - W5',
-    points: ['急救闭环', '权限 / 系统底座', '医生协作基础', '患者陪护基础'],
-    description: '围绕患者求救、医生接诊、多中心协作和基础陪护，形成可演示、可走查的第一版主流程。'
+    points: ['患者 SOS', '医生 PC 接诊', '推送自救指引', '记录内判定与就诊记录', '患者查看历史'],
+    description: '围绕患者求救、医生接诊、自救指引、记录内蛇种判定和就诊历史查看，形成不依赖 V2/V3 的最小闭环。'
   },
   {
     key: 'v2',
-    title: '能力增强',
-    subtitle: '补智能、补视图、补运营',
+    title: '协同与持续服务',
+    subtitle: '补多中心协同和出院后服务',
     color: '#e6a23c',
-    period: 'W5 - W7',
-    points: ['蛇伤判定与 Agent', '患者 360', '陪护补全', '数据治理可视', '培训中心', '演示说明'],
-    description: '在 v1 闭环之上增强辅助诊疗、患者全景、随访运营、查询统计和培训能力。'
+    points: ['医生 APP', '转诊 / MDT / 共享', '患者 360', '基础随访', 'AI 辅助占位', '培训中心'],
+    description: '在 V1 就诊档案与医生后台之上，补齐跨院协同、医生移动端、患者 360、随访运营和 AI 辅助占位。'
   },
   {
     key: 'v3',
-    title: '治理与科研',
-    subtitle: '做深数据底座和亮点大屏',
+    title: '治理科研与智能化',
+    subtitle: '做深数据底座和高价值增强',
     color: '#909399',
-    period: 'W8+',
-    points: ['清洗 / 脱敏 / 映射 / 质控', '科研 CRF', '数据流转大屏', '医生答疑', '历史判定复盘'],
-    description: '聚焦数据治理工作台、科研沉淀、质量闭环和展示型大屏，作为后续高价值增强。'
+    points: ['清洗 / 脱敏 / 映射 / 质控', '查阅原文复核', '科研 CRF', '数据流转大屏', '图像识别 / Agent'],
+    description: '聚焦完整数据治理、科研沉淀、质控复核、展示型大屏和智能化诊疗增强，作为后续高价值能力。'
   }
 ]
 
@@ -33,17 +30,17 @@ const flowSteps = [
   {
     key: 'v1',
     title: 'v1 打通核心业务闭环',
-    detail: '患者求救 → 医生接诊 → 协作转诊 → 陪护跟进'
+    detail: '患者求救 → 医生接诊 → 推送指引 → 记录内完成判定与就诊记录 → 患者查看'
   },
   {
     key: 'v2',
-    title: 'v2 增强智能与数据可视',
-    detail: 'Agent 判定、患者 360、查询统计、培训运营'
+    title: 'v2 扩展协同与持续服务',
+    detail: '转诊 / MDT / 共享、医生 APP、患者 360、随访运营'
   },
   {
     key: 'v3',
     title: 'v3 完善治理、科研与大屏',
-    detail: '清洗质控、CRF、答疑复盘、数据流转大屏'
+    detail: '清洗质控、原文复核、CRF、历史复盘、数据流转大屏'
   }
 ]
 </script>
@@ -54,7 +51,7 @@ const flowSteps = [
       <div>
         <el-tag effect="plain" class="hero-tag">项目规划</el-tag>
         <h1>版本规划：v1 / v2 / v3 做什么</h1>
-        <p>用一个页面对齐建设节奏：v1 先跑通核心闭环，v2 增强智能和数据可视，v3 做深数据治理、科研和大屏。</p>
+        <p>用一个页面对齐建设节奏：v1 急救接诊闭环，v2 协同随访，v3 治理科研与智能化。</p>
       </div>
       <div class="hero-metric">
         <strong>3</strong>
@@ -69,7 +66,6 @@ const flowSteps = [
             <span class="version-badge" :style="{ background: version.color }">{{ version.key }}</span>
             <span class="version-title">{{ version.title }}</span>
           </div>
-          <el-tag size="small" effect="plain">{{ version.period }}</el-tag>
         </div>
         <p class="version-subtitle">{{ version.subtitle }}</p>
         <p class="version-desc">{{ version.description }}</p>
@@ -90,7 +86,7 @@ const flowSteps = [
       <div class="section-head">
         <div>
           <h2>演进流程图</h2>
-          <p>按照“先闭环、再增强、后治理”的顺序推进，避免过早陷入重型数据工作台。</p>
+          <p>按照“先闭环、再协同、后治理”的顺序推进，避免 V1 倒挂依赖 V2/V3 能力。</p>
         </div>
         <el-tag type="info" effect="plain">Roadmap Flow</el-tag>
       </div>

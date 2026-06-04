@@ -1,13 +1,13 @@
 // 数据流转大屏 mock（P401）
 
-// 流转图节点（ECharts graph）
+// 流转图节点（ECharts sankey）
 export interface FlowNode {
   name: string
-  category: number      // 0源 1网关 2通道 3存储 4消费
+  category: number      // 0源 1边界 2统一接入 3存储 4消费
   value: number         // 今日吞吐量（条）
 }
 
-export const flowCategories = ['数据源', '边界网关', '冷热通道', '存储', '消费方']
+export const flowCategories = ['数据源', '内外网边界', '统一接入', '存储', '消费方']
 
 export const flowNodes: FlowNode[] = [
   { name: '患者小程序', category: 0, value: 128 },
@@ -16,11 +16,9 @@ export const flowNodes: FlowNode[] = [
   { name: 'LIS', category: 0, value: 942 },
   { name: 'PACS', category: 0, value: 213 },
   { name: '旧专病库', category: 0, value: 5600 },
-  { name: '边界隔离网关', category: 1, value: 8739 },
-  { name: '热通道', category: 2, value: 218 },
-  { name: '冷通道', category: 2, value: 8521 },
-  { name: '实时只读库', category: 3, value: 218 },
-  { name: '专病库', category: 3, value: 8521 },
+  { name: '外网应用接口', category: 1, value: 128 },
+  { name: '内网统一接入', category: 2, value: 8739 },
+  { name: '专病库', category: 3, value: 8739 },
   { name: '对象存储 D2', category: 3, value: 1756 },
   { name: '急救接诊', category: 4, value: 54 },
   { name: 'MDT/共享', category: 4, value: 32 },
@@ -31,18 +29,16 @@ export const flowNodes: FlowNode[] = [
 export interface FlowLink { source: string; target: string }
 
 export const flowLinks: FlowLink[] = [
-  { source: '患者小程序', target: '边界隔离网关' },
-  { source: '120 出车', target: '边界隔离网关' },
-  { source: 'HIS', target: '边界隔离网关' },
-  { source: 'LIS', target: '边界隔离网关' },
-  { source: 'PACS', target: '边界隔离网关' },
-  { source: '旧专病库', target: '边界隔离网关' },
-  { source: '边界隔离网关', target: '热通道' },
-  { source: '边界隔离网关', target: '冷通道' },
-  { source: '热通道', target: '实时只读库' },
-  { source: '冷通道', target: '专病库' },
-  { source: '冷通道', target: '对象存储 D2' },
-  { source: '实时只读库', target: '急救接诊' },
+  { source: '患者小程序', target: '外网应用接口' },
+  { source: '外网应用接口', target: '内网统一接入' },
+  { source: '120 出车', target: '内网统一接入' },
+  { source: 'HIS', target: '内网统一接入' },
+  { source: 'LIS', target: '内网统一接入' },
+  { source: 'PACS', target: '内网统一接入' },
+  { source: '旧专病库', target: '内网统一接入' },
+  { source: '内网统一接入', target: '专病库' },
+  { source: '内网统一接入', target: '对象存储 D2' },
+  { source: '专病库', target: '急救接诊' },
   { source: '对象存储 D2', target: '急救接诊' },
   { source: '专病库', target: 'MDT/共享' },
   { source: '专病库', target: '随访陪护' },
@@ -61,12 +57,11 @@ export const realtimeMetrics: Metric[] = [
 
 // 24h 接入吞吐（折线）
 export const throughputHours = ['00', '03', '06', '09', '12', '15', '18', '21']
-export const throughputHot = [4, 2, 6, 38, 52, 41, 48, 27]
-export const throughputCold = [120, 80, 200, 1820, 942, 1530, 880, 2949]
+export const throughputUnified = [124, 82, 206, 1858, 994, 1571, 928, 2976]
 
-// 通道健康
-export const channelHealth = [
-  { name: '热通道', latency: '0.8s', status: '正常', desc: '轻量清洗+脱敏→实时只读库' },
-  { name: '冷通道', latency: '12min', status: '正常', desc: '完整治理→专病库' },
-  { name: '边界网关', latency: '—', status: '正常', desc: '外网隔离，C 端不直连内网' }
+// 链路健康
+export const pipelineHealth = [
+  { name: '外网应用接口', latency: '待技术确认', status: '占位', desc: '患者小程序不直连内网，接口/隔离方案待确认' },
+  { name: '内网统一接入', latency: '12min', status: '正常', desc: '统一同步进入专病库，统一口径展示接入进度' },
+  { name: '前端展示脱敏', latency: '—', status: '正常', desc: '后端保留复核能力，页面展示做脱敏处理' }
 ]

@@ -7,7 +7,7 @@ const router = useRouter()
 const appStore = useAppStore()
 
 const leaves = flattenLeaves()
-const v1Count = leaves.filter((l) => l.priority === 'v1').length
+const v1Count = leaves.filter((l) => l.priority === 'v1' && !l.hiddenFromMenu).length
 
 interface JourneyCard {
   id: string
@@ -23,48 +23,37 @@ interface JourneyCard {
 
 const journeys: JourneyCard[] = [
   {
-    id: 'J1',
-    title: '主线 1 · 蛇伤急救',
-    subtitle: '患者求救 → 接诊医生远程救助 → 入院判定 → 就诊记录',
+    id: 'V1',
+    title: 'V1 · 急救接诊闭环',
+    subtitle: '患者 SOS → 医生 PC 接诊 → 推送自救指引 → 记录内完成蛇种判定与就诊记录 → 患者查看就诊历史',
     color: '#f56c6c',
-    emoji: 'SOS',
-    role: '蛇伤患者 + 接诊医生',
+    emoji: 'V1',
+    role: '蛇伤患者 + 接诊医生 + 内网最小导入',
     entry: '/patient/sos',
-    entryTitle: '从「求救首页」开始',
-    highlights: ['患者小程序', '医生 PC', '跨终端最多', '最有戏剧张力']
+    entryTitle: '从「求救首页」开始演示',
+    highlights: ['患者小程序', '医生 PC', '规则表单', '手填补录']
   },
   {
-    id: 'J2',
-    title: '主线 2 · 数据治理',
-    subtitle: '多源接入 → 落库 → 脱敏 → 清洗 → 映射 → 质控 → 入专病库',
-    color: '#67c23a',
-    emoji: 'DB',
-    role: '数据管理员',
-    entry: '/intranet/ingest',
-    entryTitle: '从「数据接入监控」开始',
-    highlights: ['内网 PC', '冷热双通道', '其它 3 条主线的底座']
-  },
-  {
-    id: 'J3',
-    title: '主线 3 · 医生工作站',
-    subtitle: '蛇伤判定 → 转诊 → MDT 会诊 → 共享患者 → 权限 → 培训',
+    id: 'V2',
+    title: 'V2 · 协同与持续服务',
+    subtitle: '转诊 / MDT / 共享患者 → 患者 360 → 随访计划 → 打卡复查 → 医患消息',
     color: '#409eff',
-    emoji: 'MD',
+    emoji: 'V2',
     role: '接诊医生 + 多中心专家',
     entry: '/doctor/referral/new',
-    entryTitle: '从「转诊申请」开始',
-    highlights: ['医生 PC + APP', '跨院协作', '权限管理']
+    entryTitle: '从「转诊申请」开始演示',
+    highlights: ['医生 PC + APP', '跨院协同', '患者 360', '随访运营']
   },
   {
-    id: 'J4',
-    title: '主线 4 · 患者陪护',
-    subtitle: '随访计划 → 复查 → 用药打卡 → 对话 → 问卷 → 医患互动',
-    color: '#e6a23c',
-    emoji: '随',
-    role: '蛇伤患者（出院后）',
-    entry: '/patient/care/timeline',
-    entryTitle: '从「我的随访计划」开始',
-    highlights: ['患者小程序', '长周期', '推送频次控制']
+    id: 'V3',
+    title: 'V3 · 治理科研与智能化',
+    subtitle: '清洗 / 脱敏 / 映射 / 质控 → 查阅原文复核 → CRF → 数据流转大屏 → AI 增强',
+    color: '#67c23a',
+    emoji: 'V3',
+    role: '数据管理员 + 科研人员',
+    entry: '/intranet/qc',
+    entryTitle: '从「质控工作台」开始演示',
+    highlights: ['完整治理', '科研 CRF', '复核依据', '大屏展示']
   }
 ]
 
@@ -77,9 +66,9 @@ interface SysCard {
 }
 
 const systemCards: SysCard[] = [
-  { id: 'P402', title: '角色与权限', desc: '维护演示角色、菜单权限、数据权限', route: '/system/permissions', priority: 'v1' },
-  { id: 'P403', title: '医院与资质', desc: '维护医院、资质、血清库存接入', route: '/system/hospitals', priority: 'v1' },
-  { id: 'P401', title: '数据流转大屏（v3）', desc: '数据从源到专病库的实时流量呈现 · 单页展示无钻取', route: '/system/dashboard', priority: 'v3' }
+  { id: 'P402', title: '角色与权限', desc: '维护基础角色、菜单权限、数据权限', route: '/system/permissions', priority: 'v1' },
+  { id: 'P403', title: '医院与资质', desc: '维护医院、资质、血清库存接入点', route: '/system/hospitals', priority: 'v1' },
+  { id: 'P401', title: '数据流转大屏（V3）', desc: '单通道数据流 + 内外网边界水印 · 展示型大屏', route: '/system/dashboard', priority: 'v3' }
 ]
 
 function goJourney(card: JourneyCard) {
@@ -100,10 +89,10 @@ function goSys(card: SysCard) {
       <div>
         <h1>人民蛇伤模块 · 原型</h1>
         <p class="subtitle">
-          覆盖 4 条主线 · 3 类终端 · 7 类角色 · v1 阶段共 {{ v1Count }} 个页面
+          按 PRD 1.1 切成 3 层故事 · V1 可演示页面 {{ v1Count }} 个
         </p>
         <p class="hint">
-          左侧菜单按"终端"组织，每条主线的页面散落在不同终端。点击下方卡片可以快速跳到主线起点开始演示。
+          左侧菜单按终端组织，并可用“版本视图”过滤：V1 看最小闭环，V2 看协同随访，V3 看完整原型。
         </p>
       </div>
       <div class="hero-controls">
@@ -119,7 +108,7 @@ function goSys(card: SysCard) {
     </section>
 
     <section>
-      <h2 class="section-title">4 条主线</h2>
+      <h2 class="section-title">三层版本故事</h2>
       <el-row :gutter="16">
         <el-col v-for="card in journeys" :key="card.id" :xs="24" :md="12">
           <el-card class="journey-card" shadow="hover" @click="goJourney(card)">
@@ -170,16 +159,11 @@ function goSys(card: SysCard) {
     </section>
 
     <section class="docs">
-      <h2 class="section-title">配套文档（评审依据）</h2>
+      <h2 class="section-title">配套文档（当前口径）</h2>
       <ul>
-        <li><code>docs/roles.md</code> — 7 角色 × 4 终端</li>
-        <li><code>docs/journeys/journey-1-emergency.md</code> — 主线 1 蛇伤急救</li>
-        <li><code>docs/journeys/journey-2-data.md</code> — 主线 2 数据治理（评审已合并 v2 反馈）</li>
-        <li><code>docs/journeys/journey-3-doctor.md</code> — 主线 3 医生工作站</li>
-        <li><code>docs/journeys/journey-4-care.md</code> — 主线 4 患者陪护（含推送约束）</li>
-        <li><code>docs/data-flow.md</code> — 数据流贯穿图（含冷热双通道、网络边界、D2 消费修正）</li>
-        <li><code>docs/information-architecture.md</code> — 信息架构与路由表</li>
-        <li><code>docs/page-inventory.md</code> — 54 个页面清单</li>
+        <li><code>docs/蛇伤专病PRD-v1.1.md</code> — 唯一 source of truth</li>
+        <li><code>plan/PRD-1.1-指导文档.md</code> — 本轮原型改造依据</li>
+        <li><code>docs/_archive/</code> — 旧角色、主线、数据流与页面清单归档，只作历史参考</li>
       </ul>
     </section>
   </div>

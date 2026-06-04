@@ -71,7 +71,7 @@ function hospitalName(id?: string) {
       :closable="false"
       show-icon
       title="数据来源"
-      description="求救事件经「热通道」轻量清洗后实时进入工作台（见 docs/data-flow.md）。患者既往史从专病库 D1 调阅。"
+      description="求救事件由外网应用接口同步到医生 PC 工作台；C 端不直连内网，接口/隔离方案待技术确认。"
       class="src-hint"
     />
   </div>

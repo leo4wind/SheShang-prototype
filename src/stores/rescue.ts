@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { currentPatient, type SelfRescueTemplate } from '@/mock/data'
+import mockFieldReportPhoto from '@/assets/mock-field-report.svg'
 
 // 求救事件状态机（对应 journey-1 的阶段 A-E）
 // 只能向下走：求救 → 选定医院 → 已上报 → 医生已接 → 已到院 → 治疗中 → 已出院
@@ -33,6 +34,7 @@ export interface FieldReport {
   bittenTime: string       // 咬伤时间
   snakeDescription: string // 蛇的描述
   hasPhoto: boolean        // 是否上传了照片（原型用占位）
+  photoUrl: string         // 现场照片
   voiceSeconds: number     // 语音时长（原型用占位）
 }
 
@@ -49,6 +51,21 @@ export interface VisitRecord {
   treatment: string        // 其它处置
   doctorName: string
   recordedAt: string
+  sourceDiagnosisAt?: string
+}
+
+export interface DiagnosisDraft {
+  snakeId: string
+  snakeName: string
+  signs: string[]
+  severity: string
+  ruleScore: number
+  toxinTendency: string
+  serumName: string
+  serumDose: string
+  notes: string
+  actions: string[]
+  confirmedAt: string
 }
 
 export interface RescueEvent {
@@ -62,6 +79,7 @@ export interface RescueEvent {
   report?: FieldReport
   pushedGuides: PushedGuide[]
   assignedDoctor?: string
+  diagnosisDraft?: DiagnosisDraft
   visitRecord?: VisitRecord
   // 标记是否为"当前演示患者"正在进行的事件（患者端操作的对象）
   isCurrent?: boolean
@@ -90,6 +108,7 @@ export const useRescueStore = defineStore('rescue', () => {
         bittenTime: '13:50 左右',
         snakeDescription: '土黄色，三角头，约 1 米',
         hasPhoto: true,
+        photoUrl: mockFieldReportPhoto,
         voiceSeconds: 12
       },
       pushedGuides: [
@@ -112,6 +131,7 @@ export const useRescueStore = defineStore('rescue', () => {
         bittenTime: '11:05',
         snakeDescription: '绿色细长，尾巴偏红',
         hasPhoto: true,
+        photoUrl: mockFieldReportPhoto,
         voiceSeconds: 8
       },
       pushedGuides: [
@@ -214,8 +234,17 @@ export const useRescueStore = defineStore('rescue', () => {
   function saveVisitRecord(id: string, record: VisitRecord) {
     const ev = getEvent(id)
     if (!ev) return
-    ev.visitRecord = record
+    ev.visitRecord = {
+      ...record,
+      sourceDiagnosisAt: ev.diagnosisDraft?.confirmedAt ?? record.sourceDiagnosisAt
+    }
     advance(id, 'treating')
+  }
+
+  function saveDiagnosisDraft(id: string, draft: DiagnosisDraft) {
+    const ev = getEvent(id)
+    if (!ev) return
+    ev.diagnosisDraft = draft
   }
 
   function discharge(id: string) {
@@ -235,6 +264,7 @@ export const useRescueStore = defineStore('rescue', () => {
     acceptByDoctor,
     pushGuide,
     markArrived,
+    saveDiagnosisDraft,
     saveVisitRecord,
     discharge
   }

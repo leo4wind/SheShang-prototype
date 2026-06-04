@@ -12,7 +12,7 @@ const statusType: Record<string, string> = { 已完成: 'success', 运行中: 'w
     <div class="page-head">
       <div>
         <h2>清洗任务列表</h2>
-        <p class="sub">冷通道完整治理第 2 步：脱敏后进入清洗（去重 / 空值 / 单位 / 编码）</p>
+        <p class="sub">V3 完整治理流水线：脱敏后进入清洗（去重 / 空值 / 单位 / 编码）</p>
       </div>
       <MockDataLabel />
     </div>
