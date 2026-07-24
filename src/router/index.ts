@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHashHistory, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { navTree } from './nav-config'
 
 // import.meta.glob 让 Vite 在打包时把 src/views 下的 .vue 文件按需引入
@@ -50,8 +50,13 @@ routes.push({
   meta: { id: '404', title: '页面不存在', shell: 'pc', priority: 'v1', group: '', subGroup: '', journey: '', type: '' }
 })
 
+const history =
+  import.meta.env.VITE_OFFLINE === 'true'
+    ? createWebHashHistory(import.meta.env.BASE_URL)
+    : createWebHistory(import.meta.env.BASE_URL)
+
 export const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history,
   routes,
   scrollBehavior(_to, _from, savedPosition) {
     return savedPosition ?? { top: 0, left: 0 }
